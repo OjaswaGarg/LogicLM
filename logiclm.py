@@ -126,7 +126,7 @@ def GetQuestions(db_name):
   for test_case in config:
     if test_case["db_id"]==db_name:
       questions.append(test_case["question"])
-  
+  questions =questions[:10]
   mind.CreateNewChat()
   mind.sendPrompt(f"Yodaql Info: {yodaql_info}")
   print("First Step Done")
