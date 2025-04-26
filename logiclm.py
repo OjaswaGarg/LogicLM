@@ -84,12 +84,10 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   config['dialect'] = engine
   return config
 
-
-
 def runQueries():
   sql_file_name = "spider_data/database/car_1/car_1.sql"
   sqlite_file_name = "spider_data/database/car_1/car_1.sqlite"
-  run_sql_db.trying(sqlite_file_name,sql_file_name,"Select * from continents;")
+  run_sql_db.run_query(sqlite_file_name,sql_file_name,"Select * from continents;")
   return
 def GetQuestions(db_name):
   mind = ai.GoogleGenAI.Get()
@@ -145,7 +143,14 @@ def GetQuestions(db_name):
  
 def main(argv):
   config_filename = argv[1]
+
+  if config_filename == "run_query":
+    runQueries()
+    return
+
   command = argv[2]
+
+
   if config_filename[-4:] == 'json':
     with open(config_filename) as f:
       config = json.loads(f.read())
