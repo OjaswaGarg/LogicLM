@@ -51,6 +51,7 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   rules = parse.ParseFile(open(config_filename).read())['rule']
   types = infer.TypesInferenceEngine(rules, 'duckdb')
   types.InferTypes()
+  print(config)
   config['fact_tables'] = [{'fact_table': f} for f in config['fact_tables']]
   def Params(p):
     if p not in types.predicate_signature:

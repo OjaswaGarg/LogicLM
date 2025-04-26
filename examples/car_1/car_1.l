@@ -1,80 +1,76 @@
-@Engine("sqlite");
-# LogicLM Configuration (for interactive exploration)
+@Engine("duckdb");
+# LogicLM Configuration (Example)
 LogicLM(
-    name: "Car Database Exploration",
-    title: "Car Data Analysis",
-    tagline: "Explore car data by continent, country, maker, and model.",
-    port: 8080,  -- Choose a port
-    fact_tables: ["CarsFact"],
-    default_fact_table: "CarsFact",
-    dimensions: [
-        "ContinentName", "CountryName", "MakerName", "ModelName", "Year"
-    ],
-    measures: [
-        "NumberOfModels", "AvgMPG", "AvgHorsepower", "NumberOfCars"
-    ],
-    filters: [
-        "FilterByContinent", "FilterByCountry", "FilterByMaker", "FilterByYear"
+    name: "Car Database Analysis",
+    title: "Car Data Exploration",
+    tagline: "Explore car manufacturers, models, and specifications.",
+    port: 8080,  # Choose a port for the LogicLM interface
+    fact_tables: ["CarFacts"],
+    default_fact_table: "CarFacts",
+    dimensions: ["Continent", "CountryName", "Maker", "Model", "Year", "Cylinders"],
+    measures: ["CountryCount", "ModelCount", "AvgMPG", "AvgHorsepower", "AvgWeight"],
+    filters: ["ContinentFilter", "CountryFilter", "MakerFilter", "YearFilter"],
+    suffix_lines: [
+        "Use Table() chart type by default.",
+        "Use parameter names for filters (e.g., ContinentFilter(continents: ['Europe'])).",
+        "Specify order after a space (e.g., order: [Maker() asc]).",
+        "Use -1 for no limit."
     ]
 );
 
 
-# Fact Table (combining relevant data)
-CarsFact(
-    continent_id:, continent_name:,
-    country_id:, country_name:,
-    maker_id:, maker_name:,
-    model_id:, model_name:,
-    mpg:, horsepower:, year:
+# Fact Table
+CarFacts(
+    continent_id:, continent_name:, country_id:, country_name:,
+    maker_id:, maker_name:, maker_fullname:, model_id:, model_name:,
+    mpg:, cylinders:, edispl:, horsepower:, weight:, accelerate:, year:
 ) :-
     continents(contid: continent_id, continent: continent_name),
     countries(countryid: country_id, countryname: country_name, continent: continent_id),
-    car_makers(id: maker_id, fullname: maker_name, country: country_id),
+    car_makers(id: maker_id, maker: maker_name, fullname: maker_fullname, country: country_id),
     model_list(modelid: model_id, maker: maker_id, model: model_name),
-    cars_data(id: car_id, mpg:, cylinders:, edispl:, horsepower:, weight:, accelerate:, year:, model: model_id);   
+    cars_data(id:, model: model_id, mpg:, cylinders:, edispl:, horsepower:, weight:, accelerate:, year:);
 
 
 
 # Dimensions
-ContinentName(fact) = fact.continent_name;
+Continent(fact) = fact.continent_name;
 CountryName(fact) = fact.country_name;
-MakerName(fact) = fact.maker_name;
-ModelName(fact) = fact.model_name;
+Maker(fact) = fact.maker_fullname;
+Model(fact) = fact.model_name;
 Year(fact) = fact.year;
+Cylinders(fact) = fact.cylinders;
 
 # Measures
-NumberOfModels(fact) = CountDistinct(fact.model_name);
-AvgMPG(fact) = Avg(SafeCast(fact.mpg, 'DOUBLE'));  -- Handle potential text MPG
-AvgHorsepower(fact) = Avg(SafeCast(fact.horsepower, 'DOUBLE')); -- Handle potential text Horsepower
-NumberOfCars(fact) = Count(fact.id);  -- Assuming id is unique in cars_data
+CountryCount(fact) = CountDistinct(fact.country_id);
+ModelCount(fact) = CountDistinct(fact.model_id);
 
-
+AvgMPG(fact) = Avg{ToFloat64(fact.mpg)}; # Convert mpg to a numeric type before averaging
+AvgHorsepower(fact) = Avg{ToFloat64(fact.horsepower)}; # Convert horsepower to numeric
+AvgWeight(fact) = Avg(fact.weight);
 
 # Filters
-FilterByContinent(fact, continents:) :- Constraint(fact.continent_name in continents);
-FilterByCountry(fact, countries:) :- Constraint(fact.country_name in countries);
-FilterByMaker(fact, makers:) :- Constraint(fact.maker_name in makers);
-FilterByYear(fact, years:) :- Constraint(fact.year in years);
+ContinentFilter(fact, continents:) :- Constraint(fact.continent_name in continents);
+CountryFilter(fact, countries:) :- Constraint(fact.country_name in countries);
+MakerFilter(fact, makers:) :- Constraint(fact.maker_fullname in makers);
+YearFilter(fact, years:) :- Constraint(fact.year in years);
 
 
+# Queries (can be run directly from the command line)
 
+# How many continents are there?
+ContinentCount() = CountDistinct{fact.continent_id :- CarFacts(continent_id:)};
 
-# Predicates to answer specific questions (outside LogicLM config)
+# How many countries does each continent have?
+CountriesPerContinent(continent_id:, country_count?+=1) distinct :- CarFacts(continent_id:, country_id:);
 
-NumberOfContinents(count?Count=1) :- continents();
+# How many countries are listed?
+CountryCount() = CountDistinct{fact.country_id :- CarFacts(country_id:)};
 
-CountriesPerContinent(continent_id:, continent_name:, num_countries?Count=1) :-
-    continents(contid: continent_id, continent: continent_name),
-    countries(continent: continent_id);
+# How many models does each car maker produce?
+ModelsPerMaker(maker_id:, model_count?+=1) distinct :- CarFacts(maker_id:, model_id:);
 
-NumberOfCountries(count?Count=1) :- countries();
-
-
-ModelsPerMaker(maker_name:, maker_id:, num_models?Count=1) :-
-    car_makers(fullname: maker_name, id: maker_id),
-    model_list(maker: maker_id);
-
-ModelWithMinHP(model_name:) :-
-    cars_data(model: model_id, horsepower: hp),
-    hp == Min{horsepower :- cars_data(horsepower:)}, #Find minimum horsepower
-    model_list(modelid: model_id, model: model_name);
+# Which model has the minimum horsepower?
+MinHorsepowerModel(model_id:) :-
+    CarFacts(model_id:, horsepower:),
+    horsepower = Min{ToFloat64(horsepower) :- CarFacts(horsepower:)};  # Convert to numeric

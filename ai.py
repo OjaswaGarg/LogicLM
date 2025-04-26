@@ -114,7 +114,7 @@ class GoogleGenAI(AI):
     def sendPrompt(self,prompt):
       response=self.chat.send_message(prompt,generation_config=dict(
               max_output_tokens=3000,
-              temperature=1
+              temperature=0.2
             ))
       return response.text
    
