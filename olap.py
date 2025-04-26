@@ -118,10 +118,8 @@ class Olap:
       table = self.fact_table_of_measure[measure]
       result[table] = result.get(table, []) + [measure]
     return result
-  
-  def GetConsolidationInfo(self) -> dict[str, tuple[str,
-                                                    dict[str, str],
-                                                    dict[str, str]]]:
+ 
+  def GetConsolidationInfo(self):
     result = {}
     for f in self.config['fact_tables']:
       name = f['fact_table']

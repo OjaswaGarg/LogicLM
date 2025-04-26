@@ -80,21 +80,46 @@ class AI:
 
 
 class GoogleGenAI(AI):
-  configured_api_key = None
-  api_key_system_variable = 'LOGICLM_GOOGLE_GENAI_API_KEY'
+    configured_api_key = None
+    api_key_system_variable = 'LOGICLM_GOOGLE_GENAI_API_KEY'
+    chat=None
+    def __call__(self, prompt):
+        self.api_key = os.environ.get(self.api_key_system_variable)
+        if not self.api_key:
+            raise ValueError(
+                f"Google GenAI API key not found in environment variable: {self.api_key_system_variable}"
+            )
+        if self.configured_api_key != self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.configured_api_key = self.api_key
+        model = genai.GenerativeModel(model_name='gemini-1.5-flash')  # Try accessing GenerativeModel directly
+        try:
+          content = model.generate_content(
+            prompt,
+            generation_config=dict(
+              max_output_tokens=512,
+              temperature=0.2
+            ))
+          return self.CutOffChatter(content.text)
+          #return content.text
+        except Exception as e:
+          print(f"An error occurred: {e}")
+    def CreateNewChat(self):
+      self.api_key = os.environ.get(self.api_key_system_variable)
+      if self.configured_api_key != self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.configured_api_key = self.api_key
+      model = genai.GenerativeModel(model_name='gemini-1.5-pro')
+      self.chat=model.start_chat()
+    def sendPrompt(self,prompt):
+      response=self.chat.send_message(prompt,generation_config=dict(
+              max_output_tokens=3000,
+              temperature=1
+            ))
+      return response.text
+   
+     
 
-  def __call__(self, prompt):
-    if self.configured_api_key != self.api_key:
-      genai.configure(api_key=self.api_key)
-      self.configured_api_key = self.api_key
-    model = generative_models.GenerativeModel('gemini-1.5-flash-preview-0514')
-    content = model.generate_content(
-      prompt,
-      generation_config=dict(
-        max_output_tokens=512,
-        temperature=0.2
-      ))
-    return self.CutOffChatter(content.text)
 
 class OpenAI(AI):
   configured_api_key = None
@@ -155,11 +180,12 @@ def GetPromptTemplate(config):
                                     MaybeDescription(d))
                       for d in config['dimensions'])
   result_lines.append('')
-  result_lines.append('Available filters are:')
-  result_lines.extend('* %s(%s)%s' % (d['predicate']['predicate_name'],
-                                      params_str(d['predicate'].get('parameters', [])),
-                                      MaybeDescription(d))
-                      for d in config['filters'])
+  if 'filters' in config:
+    result_lines.append('Available filters are:')
+    result_lines.extend('* %s(%s)%s' % (d['predicate']['predicate_name'],
+                                        params_str(d['predicate'].get('parameters', [])),
+                                        MaybeDescription(d))
+                        for d in config['filters'])
   result_lines.append('')
   result_lines.append('Available charts are:')
   result_lines.extend('* %s(%s)%s' % (c['predicate']['predicate_name'],
@@ -170,7 +196,8 @@ def GetPromptTemplate(config):
   # result_lines.append('In the order clause please back-tick the predicate call.')
   result_lines.append('Always use all the fields. For example if you do not have filters, then pass it as empty list.')
   result_lines.append('')
-  result_lines.extend(config['suffix_lines'])
+  if 'suffix_lines' in config:
+    result_lines.extend(config['suffix_lines'])
   result_lines.append('')
   result_lines.append('Write me JSON for this request: __USER_REQUEST__')
   return '\n'.join(result_lines)
