@@ -99,21 +99,40 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   config['dialect'] = engine
   return config
 
-def runQueries(str_query="Select * from continents;"):
+def getSQLite(db_name):
+  path = f"spider_data/database/{db_name}/"
+  for item in os.listdir(path):
+    item_path = os.path.join(path, item)
+    if os.path.isfile(item_path) and ".sqlite" in item_path:
+      return item_path
+def getSchema(db_name):
+  path = f"spider_data/database/{db_name}/"
+  for item in os.listdir(path):
+    item_path = os.path.join(path, item)
+    if os.path.isfile(item_path) and ".sql" in item_path and ".sqlite" not in item_path:
+      return item_path
+      
+
+def runQueries(str_query="Select * from continents;",db_name="car_1"):
   print(str_query)
   if str_query.startswith("Select")==False:
     index=str_query.find("WITH")
     str_query =str_query[index:]
   print(str_query)
-  sql_file_name = "spider_data/database/car_1/car_1.sql"
-  sqlite_file_name = "spider_data/database/car_1/car_1.sqlite"
+  sql_file_name = getSchema(db_name)
+  sqlite_file_name = getSQLite(db_name)
+  print(sql_file_name,sqlite_file_name)
   print("The query which is going to run ....................................................: ", str_query)
   run_sql_db.run_query(sqlite_file_name,sql_file_name,str_query)
   return
+  
+
+
 def GetQuestions(db_name):
   mind = ai.GoogleGenAI.Get()
   db_question_name = "spider_data/dev.json"
-  sql_file_name = "spider_data/database/car_1/car_1.sql"
+  sql_file_name = getSchema(db_name)
+  print(sql_file_name)
   yodaql_file_name = "logica_description.txt"
   def lowercase_quotes(match):
     return f'"{match.group(1).lower()}"'
@@ -130,12 +149,14 @@ def GetQuestions(db_name):
               transformed.append(stripped.lower())
       return f"({', '.join(transformed)})"
 
-
-  example_yodaql_config_file_name = "examples/starfleet/starfleet.l"
+  example_yodaql_config_file_name = "examples/car_1/car_final.l"
   with open(example_yodaql_config_file_name) as f:
       example_yodaql_config = f.read()
   with open(sql_file_name) as f:
       sql_schema = f.read()
+      lines = sql_schema.strip().split('\n')
+      filtered_lines = [line for line in lines if not line.lower().startswith("insert into")]
+      sql_schema = "\n".join(filtered_lines)
       sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
       converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
   print(converted_schema)
@@ -165,12 +186,24 @@ def GetQuestions(db_name):
     print("Example Yodaql Config Step Done")
     time.sleep(20)
     print(step4[:100])
-    new_config=mind.sendPrompt("Please provide a yodaql config for Input Schema which answers the questions.",30000)
+    new_config=mind.sendPrompt("Please provide a yodaql config for Input Schema which answers the questions. Please do not include any hashtags or comments.",30000)
     print(new_config)
-    create_and_write_file("examples/car_1/car_2.l",new_config)
+    create_and_write_file(f"examples/{db_name}/{db_name}_new.l",new_config)
     print("Yodaql Config")
   except:
     print("Did not run config creation.")
+
+def GetQuestion():
+  folders=[]
+  path = f"spider_data/database//"
+  for item in os.listdir(path):
+    item_path = os.path.join(path, item)
+    if os.path.isdir(item_path):
+      folders.append(item)
+  for db_name in folders[:5]:
+    GetQuestions(db_name)
+
+
   
  
 def main(argv):
@@ -179,12 +212,20 @@ def main(argv):
   if config_filename == "run_query":
     print(argv)
     if len(argv)>=3:
-      runQueries(argv[2])
+      runQueries(argv[2],argv[3])
     else:
       runQueries()
     return
-
+  
+  if config_filename =="get_questions":
+    if len(argv)>=3:
+      GetQuestions(argv[2])
+    else:
+      GetQuestion()
+    return
   command = argv[2]
+
+  
 
 
   if config_filename[-4:] == 'json':
@@ -196,9 +237,6 @@ def main(argv):
   if command == 'understand':
     user_request = argv[3]
     print(Understand(config, user_request))
-  elif command =="get_questions":
-    db_name = argv[3]
-    GetQuestions(db_name)
   elif command == 'logic_program':
     request = json.loads(argv[3])
     analyzer = olap.Olap(config, request)
@@ -228,8 +266,10 @@ def main(argv):
     request = Understand(config, user_request)
     analyzer = olap.Olap(config, request)
     try:
-      #print(analyzer.GetSQL())
-      runQueries(analyzer.GetSQL())
+      if len(argv)>=5:
+        runQueries(analyzer.GetSQL(),argv[4])
+      else:
+        runQueries(analyzer.GetSQL())
     except parse.ParsingException as parsing_exception:
       parsing_exception.ShowMessage()
       sys.exit(1)
