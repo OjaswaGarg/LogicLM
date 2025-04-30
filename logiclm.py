@@ -23,6 +23,7 @@ import ai
 import server
 import time
 import re
+import os
 
 
 from logica.common import logica_lib
@@ -31,10 +32,24 @@ from logica.parser_py import parse
 import run_sql_db
 
 
+def create_and_write_file(filepath, content):
+    """Creates a file at the specified filepath (including parent directories) and writes the given content to it."""
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'w') as f:
+            f.write(content)
+        print(f"File '{filepath}' created and the following content was written:\n'{content}'")
+    except Exception as e:
+        print(f"An error occurred while creating or writing to the file: {e}")
+
 def Understand(config, user_request):
   mind = ai.AI.Get()
   template = ai.GetPromptTemplate(config)
-  json_str = mind(template.replace('__USER_REQUEST__', user_request))
+  try:
+    json_str = mind(template.replace('__USER_REQUEST__', user_request))
+  except:
+    print("Failed to get Logic in Understand")
+  print("This is me:",json_str)
   try:
     json_obj = json.loads(json_str)
   except Exception as e:
@@ -84,10 +99,16 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   config['dialect'] = engine
   return config
 
-def runQueries():
+def runQueries(str_query="Select * from continents;"):
+  print(str_query)
+  if str_query.startswith("Select")==False:
+    index=str_query.find("WITH")
+    str_query =str_query[index:]
+  print(str_query)
   sql_file_name = "spider_data/database/car_1/car_1.sql"
   sqlite_file_name = "spider_data/database/car_1/car_1.sqlite"
-  run_sql_db.run_query(sqlite_file_name,sql_file_name,"Select * from continents;")
+  print("The query which is going to run ....................................................: ", str_query)
+  run_sql_db.run_query(sqlite_file_name,sql_file_name,str_query)
   return
 def GetQuestions(db_name):
   mind = ai.GoogleGenAI.Get()
@@ -117,6 +138,7 @@ def GetQuestions(db_name):
       sql_schema = f.read()
       sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
       converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
+  print(converted_schema)
   with open(yodaql_file_name) as f:
       yodaql_info = f.read()
   questions=[]
@@ -125,27 +147,41 @@ def GetQuestions(db_name):
   for test_case in config:
     if test_case["db_id"]==db_name:
       questions.append(test_case["question"])
-  questions =questions[:10]
-  mind.CreateNewChat()
-  mind.sendPrompt(f"Yodaql Info: {yodaql_info}")
-  print("First Step Done")
-  time.sleep(10)
-  mind.sendPrompt(f"Input Schema: {converted_schema}")
-  print("Second Step Done")
-  time.sleep(10)
-  mind.sendPrompt(f"Questions : {','.join(questions)}")
-  print("Third Step Done")
-  time.sleep(10)
-  mind.sendPrompt(f"Example Yodaql Config : {example_yodaql_config}")
-  print("Fourth Step Done")
-  time.sleep(10)
-  print(mind.sendPrompt("Provide a yodaql config for Input Schema which answers the questions."))
+  try:
+    mind.CreateNewChat()
+    step1=mind.sendPrompt(f"Please Understand this Yodaql Info: {yodaql_info}")
+    print("Yodaql Info Step Done")
+    time.sleep(20)
+    print(step1[:100])
+    step2=mind.sendPrompt(f"Please Understand this Input Schema: {converted_schema}")
+    print("Input Schema Step Done")
+    time.sleep(20)
+    print(step2[:100])
+    step3=mind.sendPrompt(f"Please Understand this Questions : {','.join(questions)}")
+    print("Questions  Step Done")
+    time.sleep(20)
+    print(step3[:100])
+    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config : {example_yodaql_config}")
+    print("Example Yodaql Config Step Done")
+    time.sleep(20)
+    print(step4[:100])
+    new_config=mind.sendPrompt("Please provide a yodaql config for Input Schema which answers the questions.",30000)
+    print(new_config)
+    create_and_write_file("examples/car_1/car_2.l",new_config)
+    print("Yodaql Config")
+  except:
+    print("Did not run config creation.")
+  
  
 def main(argv):
   config_filename = argv[1]
 
   if config_filename == "run_query":
-    runQueries()
+    print(argv)
+    if len(argv)>=3:
+      runQueries(argv[2])
+    else:
+      runQueries()
     return
 
   command = argv[2]
@@ -184,6 +220,16 @@ def main(argv):
     analyzer = olap.Olap(config, request)
     try:
       print(analyzer.GetSQL())
+    except parse.ParsingException as parsing_exception:
+      parsing_exception.ShowMessage()
+      sys.exit(1)
+  elif command == 'understand_sql_run':
+    user_request = argv[3]
+    request = Understand(config, user_request)
+    analyzer = olap.Olap(config, request)
+    try:
+      #print(analyzer.GetSQL())
+      runQueries(analyzer.GetSQL())
     except parse.ParsingException as parsing_exception:
       parsing_exception.ShowMessage()
       sys.exit(1)

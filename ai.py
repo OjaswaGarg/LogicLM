@@ -92,7 +92,7 @@ class GoogleGenAI(AI):
         if self.configured_api_key != self.api_key:
             genai.configure(api_key=self.api_key)
             self.configured_api_key = self.api_key
-        model = genai.GenerativeModel(model_name='gemini-1.5-flash')  # Try accessing GenerativeModel directly
+        model = genai.GenerativeModel(model_name='gemini-2.0-flash')  # Try accessing GenerativeModel directly
         try:
           content = model.generate_content(
             prompt,
@@ -109,12 +109,12 @@ class GoogleGenAI(AI):
       if self.configured_api_key != self.api_key:
             genai.configure(api_key=self.api_key)
             self.configured_api_key = self.api_key
-      model = genai.GenerativeModel(model_name='gemini-1.5-pro')
+      model = genai.GenerativeModel(model_name='gemini-2.5-pro-preview-03-25')
       self.chat=model.start_chat()
-    def sendPrompt(self,prompt):
+    def sendPrompt(self,prompt,max_output_tokens=3000):
       response=self.chat.send_message(prompt,generation_config=dict(
-              max_output_tokens=3000,
-              temperature=0.2
+              max_output_tokens=max_output_tokens,
+              temperature=1
             ))
       return response.text
    

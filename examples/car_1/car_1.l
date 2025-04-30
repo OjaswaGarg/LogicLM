@@ -18,9 +18,8 @@ LogicLM(
     ]
 );
 
-
-# Fact Table
-CarFacts(
+@With(CarFactsT);
+CarFactsT(
     continent_id:, continent_name:, country_id:, country_name:,
     maker_id:, maker_name:, maker_fullname:, model_id:, model_name:,
     mpg:, cylinders:, edispl:, horsepower:, weight:, accelerate:, year:
@@ -31,6 +30,7 @@ CarFacts(
     model_list(modelid: model_id, maker: maker_id, model: model_name),
     cars_data(id:, model: model_id, mpg:, cylinders:, edispl:, horsepower:, weight:, accelerate:, year:);
 
+CarFacts(r) :- CarFactsT(..r);
 
 
 # Dimensions
@@ -42,11 +42,11 @@ Year(fact) = fact.year;
 Cylinders(fact) = fact.cylinders;
 
 # Measures
-CountryCount(fact) = CountDistinct(fact.country_id);
-ModelCount(fact) = CountDistinct(fact.model_id);
+CountryCount(fact) = Count(fact.country_id);
+ModelCount(fact) = Count(fact.model_id);
 
-AvgMPG(fact) = Avg{ToFloat64(fact.mpg)}; # Convert mpg to a numeric type before averaging
-AvgHorsepower(fact) = Avg{ToFloat64(fact.horsepower)}; # Convert horsepower to numeric
+AvgMPG(fact) = Avg(ToFloat64(fact.mpg)); # Convert mpg to a numeric type before averaging
+AvgHorsepower(fact) = Avg(ToFloat64(fact.horsepower)); # Convert horsepower to numeric
 AvgWeight(fact) = Avg(fact.weight);
 
 # Filters
@@ -54,23 +54,3 @@ ContinentFilter(fact, continents:) :- Constraint(fact.continent_name in continen
 CountryFilter(fact, countries:) :- Constraint(fact.country_name in countries);
 MakerFilter(fact, makers:) :- Constraint(fact.maker_fullname in makers);
 YearFilter(fact, years:) :- Constraint(fact.year in years);
-
-
-# Queries (can be run directly from the command line)
-
-# How many continents are there?
-ContinentCount() = CountDistinct{fact.continent_id :- CarFacts(continent_id:)};
-
-# How many countries does each continent have?
-CountriesPerContinent(continent_id:, country_count?+=1) distinct :- CarFacts(continent_id:, country_id:);
-
-# How many countries are listed?
-CountryCount() = CountDistinct{fact.country_id :- CarFacts(country_id:)};
-
-# How many models does each car maker produce?
-ModelsPerMaker(maker_id:, model_count?+=1) distinct :- CarFacts(maker_id:, model_id:);
-
-# Which model has the minimum horsepower?
-MinHorsepowerModel(model_id:) :-
-    CarFacts(model_id:, horsepower:),
-    horsepower = Min{ToFloat64(horsepower) :- CarFacts(horsepower:)};  # Convert to numeric
