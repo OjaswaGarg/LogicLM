@@ -74,7 +74,7 @@ class AI:
     useful_end = response.rfind('}') + 1
     useful_response = response[useful_start:useful_end]
     if response != useful_response:
-      print('Cutting of chatter from:', response)
+      #print('Cutting of chatter from:', response)
       print('Obtaining:', useful_response)
     return useful_response
 
@@ -199,6 +199,8 @@ def GetPromptTemplate(config):
   if 'suffix_lines' in config:
     result_lines.extend(config['suffix_lines'])
   result_lines.append('')
+  result_lines.append('If there are no measures choose any measure.')
+  result_lines.append('Skip ordering.')
   result_lines.append('Write me JSON for this request: __USER_REQUEST__')
   return '\n'.join(result_lines)
 

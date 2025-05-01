@@ -1,4 +1,4 @@
-```yodaql
+
 @Engine("duckdb");
 
 LogicLM(
@@ -124,4 +124,3 @@ FacultyParticipatesInActivity(fact, activity_names:) :-
   Faculty_Participates_in(FacID: fact.FacID, actid: activity_id_val),
   activity_actual_name == ActivityNameLookup(activity_id_val),
   activity_actual_name in activity_names;
-```

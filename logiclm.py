@@ -23,6 +23,7 @@ import ai
 import server
 import time
 import re
+import pandas as pd
 import os
 
 
@@ -30,28 +31,32 @@ from logica.common import logica_lib
 from logica.type_inference.research import infer
 from logica.parser_py import parse
 import run_sql_db
+import collections
 
 
 def create_and_write_file(filepath, content):
     """Creates a file at the specified filepath (including parent directories) and writes the given content to it."""
+    lines = content.strip().split('\n')
+    filtered_lines = [line for line in lines if not line.lower().startswith("```")]
+    content_filtered = "\n".join(filtered_lines)
+    
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, 'w') as f:
-            f.write(content)
-        print(f"File '{filepath}' created and the following content was written:\n'{content}'")
+            f.write(content_filtered)
+        print(f"File '{filepath}' created and the following content was written:\n'{content_filtered}'")
     except Exception as e:
         print(f"An error occurred while creating or writing to the file: {e}")
 
 def Understand(config, user_request):
   mind = ai.AI.Get()
   template = ai.GetPromptTemplate(config)
-  try:
-    json_str = mind(template.replace('__USER_REQUEST__', user_request))
-  except:
-    print("Failed to get Logic in Understand")
-  print("This is me:",json_str)
+  json_str = mind(template.replace('__USER_REQUEST__', user_request))
   try:
     json_obj = json.loads(json_str)
+    # Skipping ordering
+    json_obj["order"] = []
+    print(json_obj)
   except Exception as e:
     print('Failed parsing:', json_str)
     raise e
@@ -66,7 +71,6 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   rules = parse.ParseFile(open(config_filename).read())['rule']
   types = infer.TypesInferenceEngine(rules, 'duckdb')
   types.InferTypes()
-  print(config)
   config['fact_tables'] = [{'fact_table': f} for f in config['fact_tables']]
   def Params(p):
     if p not in types.predicate_signature:
@@ -113,18 +117,18 @@ def getSchema(db_name):
       return item_path
       
 
-def runQueries(str_query="Select * from continents;",db_name="car_1"):
-  print(str_query)
-  if str_query.startswith("Select")==False:
-    index=str_query.find("WITH")
+def runQueries(str_query="Select * from continents;",db_name="car_1",debug=False):
+  if str_query.lower().startswith("select")==False:
+    index=str_query.lower().find("with")
     str_query =str_query[index:]
-  print(str_query)
   sql_file_name = getSchema(db_name)
   sqlite_file_name = getSQLite(db_name)
-  print(sql_file_name,sqlite_file_name)
-  print("The query which is going to run ....................................................: ", str_query)
-  run_sql_db.run_query(sqlite_file_name,sql_file_name,str_query)
-  return
+  if debug:
+    print("The query which is going to run ....................................................: ", str_query)
+  df = run_sql_db.run_query(sqlite_file_name,sql_file_name,str_query)
+  if debug:
+    print(df)
+  return df
   
 
 
@@ -149,9 +153,15 @@ def GetQuestions(db_name):
               transformed.append(stripped.lower())
       return f"({', '.join(transformed)})"
 
-  example_yodaql_config_file_name = "examples/car_1/car_final.l"
-  with open(example_yodaql_config_file_name) as f:
-      example_yodaql_config = f.read()
+  example_yodaql_config_file_name1 = "examples/car_1/car_1_new.l"
+  example_yodaql_config_file_name2 = "examples/concert_singer/concert_singer_new.l"
+  example_yodaql_config_file_name3 = "examples/poker_player/poker_player_new.l"
+  with open(example_yodaql_config_file_name1) as f:
+      example_yodaql_config1 = f.read()
+  with open(example_yodaql_config_file_name2) as f:
+      example_yodaql_config2 = f.read()
+  with open(example_yodaql_config_file_name3) as f:
+      example_yodaql_config3 = f.read()
   with open(sql_file_name) as f:
       sql_schema = f.read()
       lines = sql_schema.strip().split('\n')
@@ -159,7 +169,6 @@ def GetQuestions(db_name):
       sql_schema = "\n".join(filtered_lines)
       sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
       converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
-  print(converted_schema)
   with open(yodaql_file_name) as f:
       yodaql_info = f.read()
   questions=[]
@@ -182,12 +191,19 @@ def GetQuestions(db_name):
     print("Questions  Step Done")
     time.sleep(20)
     print(step3[:100])
-    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config : {example_yodaql_config}")
-    print("Example Yodaql Config Step Done")
+    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 1 : {example_yodaql_config1}")
+    print("Example Yodaql Config 1 Step Done")
+    time.sleep(20)
+    print(step4[:100])
+    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 2 : {example_yodaql_config2}")
+    print("Example Yodaql Config 2 Step Done")
+    time.sleep(20)
+    print(step4[:100])
+    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 3 : {example_yodaql_config3}")
+    print("Example Yodaql Config 3 Step Done")
     time.sleep(20)
     print(step4[:100])
     new_config=mind.sendPrompt("Please provide a yodaql config for Input Schema which answers the questions. Please do not include any hashtags or comments.",30000)
-    print(new_config)
     create_and_write_file(f"examples/{db_name}/{db_name}_new.l",new_config)
     print("Yodaql Config")
   except:
@@ -195,13 +211,124 @@ def GetQuestions(db_name):
 
 def GetQuestion():
   folders=[]
-  path = f"spider_data/database//"
-  for item in os.listdir(path):
-    item_path = os.path.join(path, item)
-    if os.path.isdir(item_path):
-      folders.append(item)
-  for db_name in folders[:5]:
-    GetQuestions(db_name)
+  questions=collections.defaultdict(list)
+  db_question_name = "spider_data/dev.json"
+  with open(db_question_name) as f:
+      config = json.loads(f.read())
+  for test_case in config:
+    if test_case["db_id"]:
+      questions[test_case["db_id"]].append(test_case["question"])
+  for db_name in list(questions.keys()):
+    try:
+        if getSchema(db_name) and getSQLite(db_name):
+          folders.append(db_name)
+    except:
+        continue
+  for db_name in folders:
+    print(folders)
+    file_path = f"examples/{db_name}/{db_name}_new.l"
+    print(file_path)
+    if os.path.exists(file_path):
+      print("skipped for:", db_name)
+    else:
+      GetQuestions(db_name)
+
+def write_list_of_lists_to_file(data, filename):
+    """Writes a list of lists to a text file.
+
+    Each inner list will be written as a comma-separated line in the file.
+
+    Args:
+        data: A list of lists to be written to the file.
+        filename: The name of the file to create or overwrite.
+    """
+    try:
+        with open(filename, 'w') as outfile:
+            for inner_list in data:
+                # Convert each element in the inner list to a string
+                string_elements = [str(item) for item in inner_list]
+                # Join the string elements with a comma and write to the file
+                line = ','.join(string_elements) + '\n'
+                outfile.write(line)
+        print(f"List of lists successfully written to '{filename}'")
+    except Exception as e:
+        print(f"An error occurred while writing to the file: {e}")
+
+def Testing():
+  questions=collections.defaultdict(list)
+  sql_queries=collections.defaultdict(list)
+  db_question_name = "spider_data/dev.json"
+  answers=[]
+  errors=[]
+  delete_configs=[]
+  with open(db_question_name) as f:
+      config = json.loads(f.read())
+  for test_case in config:
+    if test_case["db_id"]:
+      questions[test_case["db_id"]].append(test_case["question"])
+      sql_queries[test_case["db_id"]].append(test_case["query"])
+  testing_done=0
+  for db_name in questions:
+    file_path = f"examples/{db_name}/{db_name}_new.l"
+    if os.path.exists(file_path)==False:
+      print("Skipping for db_name:",db_name)
+      continue
+    with open(file_path) as f:
+      config_output = f.read().lower()
+    if "logiclm" not in config_output:
+      print("LOGIC LM not in: ", file_path)
+      delete_configs.append(db_name)
+      continue
+
+    try:
+      print("Will do testing for db_name:",db_name)
+      print(questions[db_name][0])
+      print(sql_queries[db_name][0])
+      print(runQueries(sql_queries[db_name][0],db_name))
+      config=JsonConfigFromLogicLMPredicate(file_path)
+      request = Understand(config,questions[db_name][0] )
+      analyzer = olap.Olap(config, request)
+      print(runQueries(analyzer.GetSQL(),db_name))
+      testing_done+=1
+      for indx,question in enumerate(questions[db_name]):
+        try:
+          answer=[]
+          answer.append(db_name)
+          answer.append(question)
+          actual_df=runQueries(sql_queries[db_name][indx],db_name)
+
+          answer.append(actual_df.to_string().replace('\n', ''))
+          request = Understand(config,question )
+          analyzer = olap.Olap(config, request)
+
+          tested_df=runQueries(analyzer.GetSQL(),db_name)
+
+          answer.append(tested_df.to_string().replace('\n', ''))
+
+          answer.append(len(actual_df))
+          answer.append(len(tested_df))
+          answers.append(answer)
+        except Exception as e:
+          errors.append([db_name,question,e])
+          print(e)
+          print(f"We failed this question ->{question} for db_name: {db_name}")
+    except Exception as e:
+      print("Could no do testing for:", db_name)
+      delete_configs.append(db_name)
+      print(f"An error occurred: {e}")
+  print("Delete Configs: ",delete_configs)
+  print(answers)
+  answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
+  errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
+  print(answers_df)
+  answers_df.to_csv("running_queries1.txt", index=False)
+  errors_df.to_csv("errors1.txt", index=False)
+  print(f"Errors Number : {len(errors_df)}")
+  print("We did testing for: ", testing_done)
+
+
+
+
 
 
   
@@ -209,10 +336,14 @@ def GetQuestion():
 def main(argv):
   config_filename = argv[1]
 
+  if config_filename=="testing":
+    Testing()
+    return
+
   if config_filename == "run_query":
     print(argv)
     if len(argv)>=3:
-      runQueries(argv[2],argv[3])
+      runQueries(argv[2],argv[3],True)
     else:
       runQueries()
     return
@@ -267,7 +398,7 @@ def main(argv):
     analyzer = olap.Olap(config, request)
     try:
       if len(argv)>=5:
-        runQueries(analyzer.GetSQL(),argv[4])
+        runQueries(analyzer.GetSQL(),argv[4],True)
       else:
         runQueries(analyzer.GetSQL())
     except parse.ParsingException as parsing_exception:

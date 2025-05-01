@@ -1,5 +1,6 @@
 import sqlite3
 import re
+import pandas as pd
 
 def run_query(sqlite_file_name, sql_file, sql_query):
     # Connect to the database
@@ -18,19 +19,10 @@ def run_query(sqlite_file_name, sql_file, sql_query):
         if not cursor.fetchone():
             print(f"Applying schema from {sql_file}")
             cursor.executescript(sql_script)
-        else:
-            print("Schema already exists, skipping schema execution.")
-    else:
-        print("Warning: No tables found in SQL schema.")
 
-    # Execute the SQL query
-    print(f"Executing query: {sql_query}")
-    cursor.execute(sql_query)
-    result = cursor.fetchall()
-
-    # Print results
-    for row in result:
-        print(row)
+    df = pd.read_sql_query(sql_query, conn)
+    
 
     conn.commit()
     conn.close()
+    return df

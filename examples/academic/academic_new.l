@@ -1,4 +1,3 @@
-```yodaql
 @Engine("duckdb");
 
 LogicLM(
@@ -198,5 +197,3 @@ CitationsBetween(fact, min_count:, max_count:) :- fact.citation_num >= min_count
 ReferencesMoreThan(fact, count:) :- fact.reference_num > count;
 ReferencesLessThan(fact, count:) :- fact.reference_num < count;
 ReferencesBetween(fact, min_count:, max_count:) :- fact.reference_num >= min_count, fact.reference_num <= max_count;
-
-```
