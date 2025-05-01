@@ -1,0 +1,1386 @@
+db_name,Question,Error
+concert_singer,"What is the average, minimum, and maximum age of all singers from France?","Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  AVG(singer.age) AS avgsingerage_810388,
+  MIN(singer.age) AS minsingerage_504509,
+  MAX(singer.age) AS maxsingerage_398405,
+  singer.country AS singercountry_447921
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['France']::text[], singer.country)) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.country)
+SELECT
+  ConsolidatingFactTable.singercountry_447921 AS ""SingerCountry<>"",
+  ConsolidatingFactTable.avgsingerage_810388 AS ""AvgSingerAge<>"",
+  ConsolidatingFactTable.minsingerage_504509 AS ""MinSingerAge<>"",
+  ConsolidatingFactTable.maxsingerage_398405 AS ""MaxSingerAge<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,"What is the average, minimum, and maximum age for all French singers?","Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  AVG(singer.age) AS avgsingerage_810388,
+  MIN(singer.age) AS minsingerage_504509,
+  MAX(singer.age) AS maxsingerage_398405,
+  singer.country AS singercountry_447921
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['France']::text[], singer.country)) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.country)
+SELECT
+  ConsolidatingFactTable.singercountry_447921 AS ""SingerCountry<>"",
+  ConsolidatingFactTable.avgsingerage_810388 AS ""AvgSingerAge<>"",
+  ConsolidatingFactTable.minsingerage_504509 AS ""MinSingerAge<>"",
+  ConsolidatingFactTable.maxsingerage_398405 AS ""MaxSingerAge<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,Show the name and the release year of the song by the youngest singer.,Could not parse expression of a value.
+concert_singer,What are the names and release years for all the songs of the youngest singer?,"While compiling predicate [1mConsolidatingFactTable[0m there was found no way to assign variables: [1mfact[0m in rule for [1mMinSingerAge[0m, [1mages[0m in rule for [1mSingerAgeIs[0m."
+concert_singer,What is the name and capacity for the stadium with highest average attendance?,'StadiumCapacity'
+concert_singer,How many concerts are there in year 2014 or 2015?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014', '2015']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64)))
+SELECT
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,How many concerts occurred in 2014 or 2015?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014', '2015']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64)))
+SELECT
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,Show the stadium names without any concert.,'NumConcertsIs'
+concert_singer,What are the names of the stadiums without any concerts?,Subscript must be lowercase.
+concert_singer,Show names for all stadiums except for stadiums having a concert in year 2014.,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT CAST(concert.stadium_id AS INT64)) AS numstadiums_622960,
+  stadium.name AS stadiumname_493588
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY stadium.name)
+SELECT
+  ConsolidatingFactTable.stadiumname_493588 AS ""StadiumName<>"",
+  ConsolidatingFactTable.numstadiums_622960 AS ""NumStadiums<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,What are the names of all stadiums that did not have a concert in 2014?,"Type is needed, but not determined for [1m[][0m. Please give hints with ~ operator!"
+concert_singer,List all singer names in concerts in year 2014.,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180,
+  singer.name AS singername_437125
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.name)
+SELECT
+  ConsolidatingFactTable.singername_437125 AS ""SingerName<>"",
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,What are the names of the singers who performed in a concert in 2014?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT CAST(singer_in_concert.singer_id AS INT64)) AS numsingers_90639,
+  singer.name AS singername_437125
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.name)
+SELECT
+  ConsolidatingFactTable.singername_437125 AS ""SingerName<>"",
+  ConsolidatingFactTable.numsingers_90639 AS ""NumSingers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,what is the name and nation of the singer who have a song having 'Hey' in its name?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT CAST(singer_in_concert.singer_id AS INT64)) AS numsingers_90639,
+  singer.name AS singername_437125,
+  singer.country AS singercountry_447921
+FROM
+  singer_in_concert, singer, concert, stadium, Contains
+WHERE
+  (Contains.col0 = singer.song_name) AND
+  ('Hey' = Contains.col1) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.name, singer.country)
+SELECT
+  ConsolidatingFactTable.singername_437125 AS ""SingerName<>"",
+  ConsolidatingFactTable.singercountry_447921 AS ""SingerCountry<>"",
+  ConsolidatingFactTable.numsingers_90639 AS ""NumSingers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': no such table: Contains"
+concert_singer,What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT CAST(singer_in_concert.singer_id AS INT64)) AS numsingers_90639,
+  singer.name AS singername_437125,
+  singer.country AS singercountry_447921
+FROM
+  singer_in_concert, singer, concert, stadium, Contains
+WHERE
+  (Contains.col0 = singer.song_name) AND
+  ('Hey' = Contains.col1) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY singer.name, singer.country)
+SELECT
+  ConsolidatingFactTable.singername_437125 AS ""SingerName<>"",
+  ConsolidatingFactTable.singercountry_447921 AS ""SingerCountry<>"",
+  ConsolidatingFactTable.numsingers_90639 AS ""NumSingers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': no such table: Contains"
+concert_singer,Find the name and location of the stadiums which some concerts happened in the years of both 2014 and 2015.,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180,
+  stadium.name AS stadiumname_493588,
+  stadium.location AS stadiumlocation_342369
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014', '2015']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY stadium.name, stadium.location)
+SELECT
+  ConsolidatingFactTable.stadiumname_493588 AS ""StadiumName<>"",
+  ConsolidatingFactTable.stadiumlocation_342369 AS ""StadiumLocation<>"",
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,What are the names and locations of the stadiums that had concerts that occurred in both 2014 and 2015?,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180,
+  stadium.name AS stadiumname_493588,
+  stadium.location AS stadiumlocation_342369
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains(['2014', '2015']::text[], CAST(concert.year AS INT64))) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY stadium.name, stadium.location)
+SELECT
+  ConsolidatingFactTable.stadiumname_493588 AS ""StadiumName<>"",
+  ConsolidatingFactTable.stadiumlocation_342369 AS ""StadiumLocation<>"",
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,Find the number of concerts happened in the stadium with the highest capacity .,"Execution failed on sql 'WITH t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT singer_in_concert.concert_id) AS numconcerts_152180,
+  stadium.name AS stadiumname_493588
+FROM
+  singer_in_concert, singer, concert, stadium
+WHERE
+  (list_contains([100000]::numeric[], stadium.capacity)) AND
+  (singer.singer_id = CAST(singer_in_concert.singer_id AS INT64)) AND
+  (concert.concert_id = singer_in_concert.concert_id) AND
+  (stadium.stadium_id = CAST(concert.stadium_id AS INT64))
+GROUP BY stadium.name)
+SELECT
+  ConsolidatingFactTable.stadiumname_493588 AS ""StadiumName<>"",
+  ConsolidatingFactTable.numconcerts_152180 AS ""NumConcerts<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+concert_singer,What are the number of concerts that occurred in the stadium with the largest capacity ?,Could not parse expression of a value.
+car_1,Which model of the car has the minimum horsepower?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the model of the car with the smallest amount of horsepower?,'ModelName'
+car_1,Find the name of the makers that produced some cars in the year of 1970?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452,
+  FactTableT.maker_full_name AS makerfullname_387924
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([1970]::numeric[], FactTableT.year))
+GROUP BY FactTableT.maker_full_name)
+SELECT
+  ConsolidatingFactTable.makerfullname_387924 AS ""MakerFullName<>"",
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the name of the different car makers who produced a car in 1970?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452,
+  FactTableT.maker_full_name AS makerfullname_387924
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([1970]::numeric[], FactTableT.year))
+GROUP BY FactTableT.maker_full_name)
+SELECT
+  ConsolidatingFactTable.makerfullname_387924 AS ""MakerFullName<>"",
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,Find the make and production time of the cars that were produced in the earliest year?,Could not parse expression of a value.
+car_1,What is the accelerate of the car make amc hornet sportabout (sw)?,"Execution failed on sql 'WITH t_2_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  AVG(FactTableT.accelerate) AS avgaccelerate_40680,
+  FactTableT.make_name AS makename_968968
+FROM
+  t_2_FactTableT AS FactTableT
+WHERE
+  (list_contains(['amc hornet sportabout (sw)']::text[], FactTableT.make_name))
+GROUP BY FactTableT.make_name)
+SELECT
+  ConsolidatingFactTable.makename_968968 AS ""MakeName<>"",
+  ConsolidatingFactTable.avgaccelerate_40680 AS ""AvgAccelerate<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,How much does the car accelerate that makes amc hornet sportabout (sw)?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  AVG(FactTableT.accelerate) AS avgaccelerate_40680
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['AMC']::text[], FactTableT.maker_full_name)) AND
+  (list_contains(['Hornet Sportabout (sw)']::text[], FactTableT.model_name)))
+SELECT
+  ConsolidatingFactTable.avgaccelerate_40680 AS ""AvgAccelerate<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,How many car makers are there in france?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.maker_id) AS nummakers_84325
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['France']::text[], FactTableT.country_name)))
+SELECT
+  ConsolidatingFactTable.nummakers_84325 AS ""NumMakers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the number of makers of care in France?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.maker_id) AS nummakers_84325
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['France']::text[], FactTableT.country_name)))
+SELECT
+  ConsolidatingFactTable.nummakers_84325 AS ""NumMakers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,How many car models are produced in the usa?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['USA']::text[], FactTableT.country_name)))
+SELECT
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the count of the car models produced in the United States?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['USA']::text[], FactTableT.country_name)))
+SELECT
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the average miles per gallon(mpg) of the cars with 4 cylinders?,Found no way to assign variables: [1mmpg_text[0m.
+car_1,What is the average miles per gallon of all the cards with 4 cylinders?,Found no way to assign variables: [1mmpg_text[0m.
+car_1,What is the smallest weight of the car produced with 8 cylinders on 1974 ?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  MIN(FactTableT.weight) AS minweight_888652
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([8]::numeric[], FactTableT.cylinders)) AND
+  (list_contains([1974]::numeric[], FactTableT.year)))
+SELECT
+  ConsolidatingFactTable.minweight_888652 AS ""MinWeight<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the minimum weight of the car with 8 cylinders produced in 1974 ?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  MIN(FactTableT.weight) AS minweight_888652
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([8]::numeric[], FactTableT.cylinders)) AND
+  (list_contains([1974]::numeric[], FactTableT.year)))
+SELECT
+  ConsolidatingFactTable.minweight_888652 AS ""MinWeight<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the number of the cars with horsepower more than 150?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the number of cars with a horsepower greater than 150?,Found no way to assign variables: [1mhp_text[0m.
+car_1,Which countries in europe have at least 3 car manufacturers?,Could not parse expression of a value.
+car_1,What are the names of all European countries with at least 3 manufacturers?,Could not parse expression of a value.
+car_1,What is the maximum horsepower and the make of the car models with 3 cylinders?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the largest amount of horsepower for the models with 3 cylinders and what make is it?,Found no way to assign variables: [1mhp_text[0m.
+car_1,"Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",Found no way to assign variables: [1mmpg_text[0m.
+car_1,What is the car model with the highest mpg ?,Found no way to assign variables: [1mmpg_text[0m.
+car_1,What is the average horsepower of the cars before 1980?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the average horsepower for all cars produced before 1980 ?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the average edispl of the cars of model volvo?,"Execution failed on sql 'WITH t_2_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  AVG(FactTableT.edispl) AS avgedispl_475501,
+  FactTableT.model_name AS modelname_83050
+FROM
+  t_2_FactTableT AS FactTableT
+WHERE
+  (list_contains(['volvo']::text[], FactTableT.model_name))
+GROUP BY FactTableT.model_name)
+SELECT
+  ConsolidatingFactTable.modelname_83050 AS ""ModelName<>"",
+  ConsolidatingFactTable.avgedispl_475501 AS ""AvgEdispl<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the average edispl for all volvos?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  AVG(FactTableT.edispl) AS avgedispl_475501
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['Volvo']::text[], FactTableT.maker_full_name)))
+SELECT
+  ConsolidatingFactTable.avgedispl_475501 AS ""AvgEdispl<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,how many cars were produced in 1980?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([1980]::numeric[], FactTableT.year)))
+SELECT
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,"In 1980, how many cars were made?","Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains([1980]::numeric[], FactTableT.year)))
+SELECT
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,How many car models were produced by the maker with full name American Motor Company?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['American Motor Company']::text[], FactTableT.maker_full_name)))
+SELECT
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the number of car models created by the car maker American Motor Company?,"Execution failed on sql 'WITH t_2_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983,
+  FactTableT.maker_full_name AS makerfullname_387924
+FROM
+  t_2_FactTableT AS FactTableT
+WHERE
+  (list_contains(['American Motor Company']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.maker_full_name)
+SELECT
+  ConsolidatingFactTable.makerfullname_387924 AS ""MakerFullName<>"",
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,Which makers designed more than 3 car models? List full name and the id.,'MakerId'
+car_1,Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983,
+  FactTableT.model_name AS modelname_83050
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['General Motors']::text[], FactTableT.maker_full_name)) AND
+  (FactTableT.weight > 3500)
+GROUP BY FactTableT.model_name)
+SELECT
+  ConsolidatingFactTable.modelname_83050 AS ""ModelName<>"",
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What are the different models created by either the car maker General Motors or weighed more than 3500?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.model_id) AS nummodels_765983,
+  FactTableT.model_name AS modelname_83050
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['General Motors']::text[], FactTableT.maker_full_name)) AND
+  (FactTableT.weight > 3500)
+GROUP BY FactTableT.model_name)
+SELECT
+  ConsolidatingFactTable.modelname_83050 AS ""ModelName<>"",
+  ConsolidatingFactTable.nummodels_765983 AS ""NumModels<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What is the horsepower of the car with the largest accelerate?,Found no way to assign variables: [1mhp_text[0m.
+car_1,What is the horsepower of the car with the greatest accelerate?,Found no way to assign variables: [1mhp_text[0m.
+car_1,"For model volvo, how many cylinders does the car with the least accelerate have?",'Cylinders'
+car_1,"For a volvo model, how many cylinders does the version with least accelerate have?",'Cylinders'
+car_1,How many cars have a larger accelerate than the car with the largest horsepower?,Could not parse expression of a value.
+car_1,What is the number of cars with a greater accelerate than the one with the most horsepower?,While compiling predicate [1mConsolidatingFactTable[0m there was found no way to assign variables: [1mfact[0m in rule for [1mMaxHorsepower[0m.
+car_1,What is the number of countries with more than 2 car makers ?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.country_id) AS numcountries_9103,
+  FactTableT.country_name AS countryname_767996
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['Acura', 'Alfa Romeo', 'AMC', 'Aston Martin', 'Audi', 'Austin', 'BMW', 'Buick', 'Cadillac', 'Capri', 'Chevrolet', 'Chrysler', 'Citroen', 'Datsun', 'Dodge', 'Fiat', 'Ford', 'GMC', 'Honda', 'Hyundai', 'Isuzu', 'Jaguar', 'Jensen', 'Kia', 'Lancia', 'Land Rover', 'Lexus', 'Lincoln', 'Lotus', 'Mazda', 'Mercedes-Benz', 'Mercury', 'MG', 'Mini', 'Mitsubishi', 'Nissan', 'Oldsmobile', 'Opel', 'Peugeot', 'Plymouth', 'Pontiac', 'Porsche', 'Renault', 'Rover', 'Saab', 'Saturn', 'Simca', 'Subaru', 'Suzuki', 'Toyota', 'Triumph', 'Volkswagen', 'Volvo']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.country_name)
+SELECT
+  ConsolidatingFactTable.countryname_767996 AS ""CountryName<>"",
+  ConsolidatingFactTable.numcountries_9103 AS ""NumCountries<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,"For the cars with 4 cylinders, which model has the largest horsepower?",Found no way to assign variables: [1mhp_text[0m.
+car_1,"For all of the 4 cylinder cars, which model has the most horsepower?",Found no way to assign variables: [1mhp_text[0m.
+car_1,"Among the cars with more than lowest horsepower, which ones do not have more than 3 cylinders? List the car makeid and make name.",While compiling predicate [1mConsolidatingFactTable[0m there was found no way to assign variables: [1mfact[0m in rule for [1mMinHorsepower[0m.
+car_1,"Among the cars that do not have the minimum horsepower , what are the make ids and names of all those with less than 4 cylinders ?",While compiling predicate [1mConsolidatingFactTable[0m there was found no way to assign variables: [1mfact[0m in rule for [1mMinHorsepower[0m.
+car_1,What is the maximum miles per gallon of the car with 8 cylinders or produced before 1980 ?,Found no way to assign variables: [1mmpg_text[0m.
+car_1,What is the maximum mpg of the cars that had 8 cylinders or that were produced before 1980 ?,Found no way to assign variables: [1mmpg_text[0m.
+car_1,Which models are lighter than 3500 but not built by the 'Ford Motor Company'?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452,
+  FactTableT.model_name AS modelname_83050
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (FactTableT.weight < 3500) AND
+  (list_contains(['Ford Motor Company']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.model_name)
+SELECT
+  ConsolidatingFactTable.modelname_83050 AS ""ModelName<>"",
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  SUM(1) AS numcars_474452,
+  FactTableT.model_name AS modelname_83050
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (FactTableT.weight < 3500) AND
+  (list_contains(['Ford Motor Company']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.model_name)
+SELECT
+  ConsolidatingFactTable.modelname_83050 AS ""ModelName<>"",
+  ConsolidatingFactTable.numcars_474452 AS ""NumCars<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What are the name of the countries where there is not a single car maker?,'=='
+car_1,What are the names of the countries with no car makers?,'=='
+car_1,Which are the car makers which produce at least 2 models and more than 3 car makers ? List the id and the maker .,Could not parse expression of a value.
+car_1,What are the id and names of the countries which have more than 3 car makers or produce the 'fiat' model?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.maker_id) AS nummakers_84325,
+  FactTableT.country_id AS countryid_279254,
+  FactTableT.country_name AS countryname_767996
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['fiat']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.country_id, FactTableT.country_name)
+SELECT
+  ConsolidatingFactTable.countryid_279254 AS ""CountryId<>"",
+  ConsolidatingFactTable.countryname_767996 AS ""CountryName<>"",
+  ConsolidatingFactTable.nummakers_84325 AS ""NumMakers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+car_1,What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?,"Execution failed on sql 'WITH t_1_FactTableT AS (SELECT
+  cars_data.id AS car_id,
+  cars_data.mpg AS mpg_str,
+  cars_data.cylinders AS cylinders,
+  cars_data.edispl AS edispl,
+  cars_data.horsepower AS horsepower_str,
+  cars_data.weight AS weight,
+  cars_data.accelerate AS accelerate,
+  cars_data.year AS year,
+  car_names.make AS make_name,
+  car_names.model AS model_name,
+  model_list.modelid AS model_id,
+  model_list.maker AS maker_id,
+  car_makers.maker AS maker_short_name,
+  car_makers.fullname AS maker_full_name,
+  car_makers.country AS country_id,
+  countries.countryname AS country_name,
+  countries.continent AS continent_id,
+  continents.continent AS continent_name
+FROM
+  cars_data, car_names, model_list, car_makers, countries, continents
+WHERE
+  (car_names.makeid = cars_data.id) AND
+  (model_list.model = car_names.model) AND
+  (car_makers.id = model_list.maker) AND
+  (countries.countryid = car_makers.country) AND
+  (continents.contid = countries.continent)),
+t_0_ConsolidatingFactTable AS (SELECT
+  COUNT(DISTINCT FactTableT.maker_id) AS nummakers_84325,
+  FactTableT.country_id AS countryid_279254,
+  FactTableT.country_name AS countryname_767996
+FROM
+  t_1_FactTableT AS FactTableT
+WHERE
+  (list_contains(['Fiat']::text[], FactTableT.maker_full_name))
+GROUP BY FactTableT.country_id, FactTableT.country_name)
+SELECT
+  ConsolidatingFactTable.countryid_279254 AS ""CountryId<>"",
+  ConsolidatingFactTable.countryname_767996 AS ""CountryName<>"",
+  ConsolidatingFactTable.nummakers_84325 AS ""NumMakers<>""
+FROM
+  t_0_ConsolidatingFactTable AS ConsolidatingFactTable;': unrecognized token: "":"""
+employee_hire_evaluation,Sort employee names by their age in ascending order.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeename_45910: EmployeeName(fact), employeeage_15017: EmployeeAge(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{age: Any, employee_age: Any, employee_id: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,List the names of employees and sort in ascending order of age.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeename_45910: EmployeeName(fact), employeeage_15017: EmployeeAge(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{age: Any, employee_age: Any, employee_id: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,What is the number of employees from each city?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeecity_723823: EmployeeCity(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{city: Any, employee_city: Any, employee_id: Any}[0m, which is impossible."
+employee_hire_evaluation,Count the number of employees for each city.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeecity_723823: EmployeeCity(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{city: Any, employee_city: Any, employee_id: Any}[0m, which is impossible."
+employee_hire_evaluation,Which cities do more than one employee under age 30 come from?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeecity_723823: EmployeeCity(fact)) distinct :- 
+  EmployeeHiringInfo(fact),
+  EmployeeAgeLessThan(fact, age: 30)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{city: Any, employee_city: Any, employee_id: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the cities that have more than one employee under age 30.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeecity_723823: EmployeeCity(fact)) distinct :- 
+  EmployeeHiringInfo(fact),
+  EmployeeAgeLessThan(fact, age: 30)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{city: Any, employee_city: Any, employee_id: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the number of shops in each location.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shoplocation_3203: ShopLocation(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{location: Any, shop_location: Any}[0m, which is impossible."
+employee_hire_evaluation,How many shops are there in each location?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shoplocation_3203: ShopLocation(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{location: Any, shop_location: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the manager name and district of the shop whose number of products is the largest.,'NumProducts'
+employee_hire_evaluation,What are the manager name and district of the shop that sells the largest number of products?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(maxnumproducts_538807? Aggr= MaxNumProducts([1mfact[0m), managername_15689: ManagerName(fact), shopdistrict_608945: ShopDistrict(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is a record [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and it does not have field [1mmanager_name[0m, which is addressed."
+employee_hire_evaluation,find the minimum and maximum number of products of all stores.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(minnumproducts_866329? Aggr= MinNumProducts([1mfact[0m), maxnumproducts_538807? Aggr= MaxNumProducts(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is a record [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and it does not have field [1mnumber_products[0m, which is addressed."
+employee_hire_evaluation,What are the minimum and maximum number of products across all the shops?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(minnumproducts_866329? Aggr= MinNumProducts([1mfact[0m), maxnumproducts_538807? Aggr= MaxNumProducts(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is a record [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and it does not have field [1mnumber_products[0m, which is addressed."
+employee_hire_evaluation,"Return the name, location and district of all shops in descending order of number of products.",'NumProducts'
+employee_hire_evaluation,"Sort all the shops by number products in descending order, and return the name, location and district of each shop.",'NumProducts'
+employee_hire_evaluation,Find the names of stores whose number products is more than the average number of products.,'ShopName'
+employee_hire_evaluation,Which shops' number products is above the average? Give me the shop names.,'ShopName'
+employee_hire_evaluation,find the name of employee who was awarded the most times in the evaluation.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numawardsperemployee_442158? Aggr= NumAwardsPerEmployee([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_name: Any, name: Any, year_awarded: Any}[0m, which is impossible."
+employee_hire_evaluation,Which employee received the most awards in evaluations? Give me the employee name.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numawardsperemployee_442158? Aggr= NumAwardsPerEmployee([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_name: Any, name: Any, year_awarded: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the name of the employee who got the highest one time bonus.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(maxbonus_523003? Aggr= MaxBonus([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{bonus: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,Which employee received the biggest bonus? Give me the employee name.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(maxbonus_523003? Aggr= MaxBonus([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{bonus: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the names of employees who never won any award in the evaluation.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,What are the names of the employees who never received any evaluation?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), employeename_45910: EmployeeName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, employee_name: Any, name: Any}[0m, which is impossible."
+employee_hire_evaluation,What is the name of the shop that is hiring the largest number of employees?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numhiringrecords_946420? Aggr= NumHiringRecords([1mfact[0m), numemployees_59980? Aggr= NumEmployees(fact), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,Which shop has the most employees? Give me the shop name.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the name of the shops that do not hire any employee.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,Which shops run with no employees? Find the shop names,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the number of employees hired in each shop; show the shop name as well.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployeeshired_550591? Aggr= NumEmployeesHired([1mfact[0m), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,"For each shop, return the number of employees working there and the name of the shop.","[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numemployees_59980? Aggr= NumEmployees([1mfact[0m), shopname_390578: ShopName(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{employee_id: Any, name: Any, shop_name: Any}[0m, which is impossible."
+employee_hire_evaluation,What is total bonus given in all evaluations?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(totalbonus_681973? Aggr= TotalBonus([1mfact[0m)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is a record [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and it does not have field [1mbonus[0m, which is addressed."
+employee_hire_evaluation,Find the total amount of bonus given in all the evaluations.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(totalbonus_681973? Aggr= TotalBonus([1mfact[0m)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is a record [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and it does not have field [1mbonus[0m, which is addressed."
+employee_hire_evaluation,Give me all the information about hiring.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numhiringrecords_946420? Aggr= NumHiringRecords([1mfact[0m), hiringstartfrom_44850: HiringStartFrom(fact), hiringisfulltime_840176: HiringIsFullTime(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{hiring_is_full_time: Any, hiring_start_from: Any, is_full_time: Any, start_from: Any}[0m, which is impossible."
+employee_hire_evaluation,What is all the information about hiring?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numhiringrecords_946420? Aggr= NumHiringRecords([1mfact[0m), hiringstartfrom_44850: HiringStartFrom(fact), hiringisfulltime_840176: HiringIsFullTime(fact)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{hiring_is_full_time: Any, hiring_start_from: Any, is_full_time: Any, start_from: Any}[0m, which is impossible."
+employee_hire_evaluation,Which district has both stores with less than 3000 products and stores with more than 10000 products?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shopdistrict_608945: ShopDistrict(fact)) distinct :- 
+  EmployeeHiringInfo(fact),
+  ShopHasProductsLessThan(fact, count: 3000),
+  ShopHasProductsMoreThan(fact, count: 10000)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{district: Any, shop_district: Any}[0m, which is impossible."
+employee_hire_evaluation,Find the districts in which there are both shops selling less than 3000 products and shops selling more than 10000 products.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numshops_932057? Aggr= NumShops([1mfact[0m), shopdistrict_608945: ShopDistrict(fact)) distinct :- 
+  EmployeeHiringInfo(fact),
+  ShopHasProductsLessThan(fact, count: 3000),
+  ShopHasProductsMoreThan(fact, count: 10000)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{district: Any, shop_district: Any}[0m, which is impossible."
+employee_hire_evaluation,How many different store locations are there?,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numdistinctlocations_255996? Aggr= NumDistinctLocations([1mfact[0m)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{location: Any, shop_location: Any}[0m, which is impossible."
+employee_hire_evaluation,Count the number of distinct store locations.,"[4mType analysis:[0m
+ConsolidatingEmployeeHiringInfo(numdistinctlocations_255996? Aggr= NumDistinctLocations([1mfact[0m)) distinct :- 
+  EmployeeHiringInfo(fact)
+
+[ [91mError[0m ] Variable [1mfact[0m is implied to be [1m{employee_age: Any, employee_city: Any, employee_id: Any, employee_name: Any, hiring_is_full_time: Any, hiring_start_from: Any, shop_district: Any, shop_id: Any, shop_location: Any, shop_name: Any}[0m and simultaneously [1m{location: Any, shop_location: Any}[0m, which is impossible."
+museum_visit,Find the average number of staff working for the museums that were open before 2009.,Found no way to assign variables: [1myear_text[0m.
+museum_visit,What are the opening year and staff number of the museum named Plaza Museum?,"Execution failed on sql 'WITH t_0_ConsolidatingVisitFact AS (SELECT
+  COUNT(DISTINCT visit.museum_id) AS countmuseums_639656,
+  museum.open_year AS openyear_524116,
+  museum.num_of_staff AS numstaff_850401
+FROM
+  visit, museum, visitor
+WHERE
+  (list_contains(['Plaza Museum']::text[], museum.name)) AND
+  (list_contains(['Plaza Museum']::text[], museum.name)) AND
+  (museum.museum_id = visit.museum_id) AND
+  (visitor.id = visit.visitor_id)
+GROUP BY museum.open_year, museum.num_of_staff)
+SELECT
+  ConsolidatingVisitFact.openyear_524116 AS ""OpenYear<>"",
+  ConsolidatingVisitFact.numstaff_850401 AS ""NumStaff<>"",
+  ConsolidatingVisitFact.countmuseums_639656 AS ""CountMuseums<>""
+FROM
+  t_0_ConsolidatingVisitFact AS ConsolidatingVisitFact LIMIT 100;': unrecognized token: "":"""
+museum_visit,find the names of museums which have more staff than the minimum staff number of all museums opened after 2010.,"While compiling predicate [1mConsolidatingVisitFact[0m there was found no way to assign variables: [1mmin_staff[0m in rule for [1mMuseumHasStaffGreaterThan[0m, [1mfact[0m in rule for [1mMinStaff[0m."
+museum_visit,"find the id, name and age for visitors who visited some museums more than once.",'NumVisitsGreaterThan'
+museum_visit,What is the total ticket expense of the visitors whose membership level is 1?,"Execution failed on sql 'WITH t_0_ConsolidatingVisitFact AS (SELECT
+  SUM(visit.num_of_ticket) AS sumtickets_366673
+FROM
+  visit, museum, visitor
+WHERE
+  (list_contains([1]::numeric[], visitor.level_of_membership)) AND
+  (museum.museum_id = visit.museum_id) AND
+  (visitor.id = visit.visitor_id))
+SELECT
+  ConsolidatingVisitFact.sumtickets_366673 AS ""SumTickets<>""
+FROM
+  t_0_ConsolidatingVisitFact AS ConsolidatingVisitFact;': unrecognized token: "":"""
+museum_visit,What is the name of the visitor who visited both a museum opened before 2009 and a museum opened after 2011?,Found no way to assign variables: [1myear_text[0m.
+museum_visit,Find the number of visitors who did not visit any museum opened after 2010.,Found no way to assign variables: [1myear_text[0m.
+museum_visit,How many museums were opened after 2013 or before 2008?,Found no way to assign variables: [1myear_text[0m.
+poker_player,List the earnings of poker players in descending order.,'PlayerEarnings'
+poker_player,What is the money rank of the poker player with the highest earnings?,'PlayerMoneyRank'
+poker_player,Return the money rank of the player with the greatest earnings.,'PlayerMoneyRank'
+poker_player,What is the money rank of the tallest poker player?,'PlayerMoneyRank'
+poker_player,Return the money rank of the poker player with the greatest height.,'PlayerMoneyRank'
+poker_player,List the names of people that are not poker players.,"Execution failed on sql 'WITH t_0_ConsolidatingPlayerInfo AS (SELECT
+  SUM(1) AS numpeople_375812,
+  people.name AS personname_269125
+FROM
+  poker_player, people
+WHERE
+  ((SELECT
+    MIN((CASE WHEN x_63.unnested_pod = 0 THEN 1 ELSE NULL END)) AS logica_value
+  FROM
+    poker_player AS t_2_poker_player, (select unnest([0]::numeric[]) as unnested_pod) as x_63
+  WHERE
+    (poker_player.people_id = t_2_poker_player.people_id)) IS NULL) AND
+  (people.people_id = poker_player.people_id)
+GROUP BY people.name)
+SELECT
+  ConsolidatingPlayerInfo.personname_269125 AS ""PersonName<>"",
+  ConsolidatingPlayerInfo.numpeople_375812 AS ""NumPeople<>""
+FROM
+  t_0_ConsolidatingPlayerInfo AS ConsolidatingPlayerInfo;': unrecognized token: "":"""
+poker_player,What are the names of people who do not play poker?,"Execution failed on sql 'WITH t_0_ConsolidatingPlayerInfo AS (SELECT
+  SUM(1) AS numpeople_375812,
+  people.name AS personname_269125
+FROM
+  poker_player, people
+WHERE
+  ((SELECT
+    MIN((CASE WHEN x_63.unnested_pod = 0 THEN 1 ELSE NULL END)) AS logica_value
+  FROM
+    poker_player AS t_2_poker_player, (select unnest([0]::numeric[]) as unnested_pod) as x_63
+  WHERE
+    (poker_player.people_id = t_2_poker_player.people_id)) IS NULL) AND
+  (people.people_id = poker_player.people_id)
+GROUP BY people.name)
+SELECT
+  ConsolidatingPlayerInfo.personname_269125 AS ""PersonName<>"",
+  ConsolidatingPlayerInfo.numpeople_375812 AS ""NumPeople<>""
+FROM
+  t_0_ConsolidatingPlayerInfo AS ConsolidatingPlayerInfo;': unrecognized token: "":"""
