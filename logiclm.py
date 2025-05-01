@@ -71,7 +71,10 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   rules = parse.ParseFile(open(config_filename).read())['rule']
   types = infer.TypesInferenceEngine(rules, 'duckdb')
   types.InferTypes()
-  config['fact_tables'] = [{'fact_table': f} for f in config['fact_tables']]
+  fact_tables = config['fact_tables']
+  if isinstance(fact_tables,str):
+    fact_tables = json.loads(fact_tables)
+  config['fact_tables'] = [{'fact_table': f} for f in fact_tables]
   def Params(p):
     if p not in types.predicate_signature:
       assert False, 'Unknown predicate %s, known: %s' % (
@@ -80,9 +83,12 @@ def JsonConfigFromLogicLMPredicate(config_filename):
             for f in types.predicate_signature[p].keys()
             if not isinstance(f, int) and f != 'logica_value']
   def BuildCalls(role, field):
+    field_content=config[field]
+    if isinstance(field_content,str):
+      field_content=json.loads(field_content)
     return [{role: {'predicate_name': p,
                     'parameters': Params(p)}}
-            for p in config[field]]
+            for p in field_content]
 
   config['dimensions'] = BuildCalls('function', 'dimensions')
   config['measures'] = BuildCalls('aggregating_function', 'measures')
@@ -308,11 +314,11 @@ def Testing():
           answer.append(len(actual_df))
           answer.append(len(tested_df))
           answers.append(answer)
-        except Exception as e:
+        except BaseException as e:
           errors.append([db_name,question,e])
           print(e)
           print(f"We failed this question ->{question} for db_name: {db_name}")
-    except Exception as e:
+    except BaseException as e:
       print("Could no do testing for:", db_name)
       delete_configs.append(db_name)
       print(f"An error occurred: {e}")
@@ -325,6 +331,7 @@ def Testing():
   errors_df.to_csv("errors1.txt", index=False)
   print(f"Errors Number : {len(errors_df)}")
   print("We did testing for: ", testing_done)
+  print("Number of rows correct:",len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]]))
 
 
 
