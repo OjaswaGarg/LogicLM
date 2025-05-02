@@ -234,49 +234,76 @@ def GetQuestions(db_name):
   except:
     print("Did not run config creation.")
 
-
-def GetLogicProgram(db_name,question):
-  mind = ai.GoogleGenAI.Get()
+def getLogicTemplate(db_name,question):
   sql_file_name = getSchema(db_name)
   logic_description_file = "logica_description.txt"
   example_logic_program_file = "examples/logic_program/logic_program.txt"
+  with open(sql_file_name) as f:
+    sql_schema = f.read()
+    lines = sql_schema.strip().split('\n')
+    filtered_lines = [line for line in lines if not line.lower().startswith("insert into")]
+    sql_schema = "\n".join(filtered_lines)
+    sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
+    converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
+    converted_schema = re.sub(r'\n\s*\n', '\n', converted_schema)
   with open(example_logic_program_file) as f:
       example_logic_program = f.read()
-  with open(sql_file_name) as f:
-      sql_schema = f.read()
-      lines = sql_schema.strip().split('\n')
-      filtered_lines = [line for line in lines if not line.lower().startswith("insert into")]
-      sql_schema = "\n".join(filtered_lines)
-      sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
-      converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
   with open(logic_description_file) as f:
       logic_info = f.read()
+  prompt =[]
+  prompt.append(f"This is the Logic Info : {logic_info}.")
+  prompt.append(f"This is the input schema: {converted_schema}.")
+  prompt.append(f"This is an exampled logic program: {example_logic_program}.")
+  prompt.append(f"Provide a Logic Program for Input Schema which answers the question- {question}. The final answer should have the name of the predicate as Report. Do not include any hashtags or comments.")
+  return "\n".join(prompt)
+
+  
+
+
+def GetLogicProgram(db_name,question):
+  mind = ai.GoogleGenAI.Get()
+  prompt = getLogicTemplate(db_name,question)
   try:
-    mind.CreateNewChat()
-    step1=mind.sendPrompt(f"Please Understand this Logic Info: {logic_info}")
-    print("Logic Info Step Done")
-    print(step1[:100])
-    step2=mind.sendPrompt(f"Please Understand this Input Schema: {converted_schema}")
-    print("Input Schema Step Done")
-    print(step2[:100])
-    step3=mind.sendPrompt(f"Please Understand this Question : {question}")
-    print("Question  Step Done")
-    print(step3[:100])
-    step4=mind.sendPrompt(f"Please Understand this Example Logic Program: {example_logic_program}")
-    print("Example Logic Program Step Done")
-    print(step4[:100])
-    new_config=mind.sendPrompt("Please provide a Logic Program for Input Schema which answers the question. The final answer show have the name of the predicate as Report. Please do not include any hashtags or comments.",30000)
-    print("Logic Program Config")
-    print(new_config)
-    new_config=cleanup_content(new_config)
-    print("Cleanup Content", new_config)
-    print("Generating SQL")
-    sql=GetSQL(new_config)
-    print(sql)
-    print("Running SQL")
-    runQueries(sql,db_name,True)
-  except:
-    print("Did not run config creation.")
+    logic_answer = mind.CreateLogicProgram(prompt)
+    logic_answer = cleanup_content(logic_answer)
+    print("LOGIC PROGRAM: ",logic_answer)
+    sql=GetSQL(logic_answer)
+    print("GENERATED SQL: ",sql.replace('\n', ''))
+    answer=runQueries(sql,db_name,False)
+    return "success",answer
+  except BaseException as e:
+    print("Error is: ", e)
+    return "error",e
+
+def GetLogicPrograms(db_name,first_n=5):
+  db_question_name = "spider_data/dev.json"
+  questions=[]
+  golden_queries=[]
+  errors=[]
+  answers=[]
+  with open(db_question_name) as f:
+      config = json.loads(f.read())
+  for test_case in config:
+    if test_case["db_id"]==db_name:
+      questions.append(test_case["question"])
+      golden_queries.append(test_case["query"])
+  for indx in range(min(len(questions),first_n)):
+    print("QUESTION------------------------------->: ", questions[indx])
+    status,output = GetLogicProgram(db_name,questions[indx])
+    if status=="error":
+      errors.append([db_name,questions[indx],output])
+      continue
+    print("ACTUAL SQL: ",golden_queries[indx])
+    answer=runQueries(golden_queries[indx],db_name)
+    answers.append([db_name,questions[indx],answer.to_string().replace('\n', ''),output.to_string().replace('\n', ''),len(answer),len(output)])
+  answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
+  errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
+  answers_df.to_csv("logic_answers.txt", index=False)
+  errors_df.to_csv("logic_errors.txt", index=False)
+  print(f"Coverage: {len(answers)/(len(answers)+len(errors))}")
+  print(f"Rows Correct on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
+
+
 
 
 def GetSQL(logic_program):
@@ -415,7 +442,10 @@ def main(argv):
     Testing()
     return
   if config_filename=="get_logic_program":
-    GetLogicProgram(argv[2],argv[3])
+    if len(argv)>3:
+      GetLogicProgram(argv[2],argv[3])
+    else:
+      GetLogicPrograms(argv[2])
     return
 
   if config_filename == "run_query":

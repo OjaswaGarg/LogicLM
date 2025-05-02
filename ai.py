@@ -75,7 +75,8 @@ class AI:
     useful_response = response[useful_start:useful_end]
     if response != useful_response:
       #print('Cutting of chatter from:', response)
-      print('Obtaining:', useful_response)
+      #print('Obtaining:', useful_response)
+      pass
     return useful_response
 
 
@@ -104,6 +105,28 @@ class GoogleGenAI(AI):
           #return content.text
         except Exception as e:
           print(f"An error occurred: {e}")
+    
+    def CreateLogicProgram(self, prompt):
+      self.api_key = os.environ.get(self.api_key_system_variable)
+      if not self.api_key:
+          raise ValueError(
+              f"Google GenAI API key not found in environment variable: {self.api_key_system_variable}"
+          )
+      if self.configured_api_key != self.api_key:
+          genai.configure(api_key=self.api_key)
+          self.configured_api_key = self.api_key
+      model = genai.GenerativeModel(model_name='gemini-2.5-pro-preview-03-25')  # Try accessing GenerativeModel directly
+      try:
+        content = model.generate_content(
+          prompt,
+          generation_config=dict(
+            max_output_tokens=3000,
+            temperature=0.2
+          ))
+        return content.text
+      except Exception as e:
+        print(f"An error occurred: {e}")
+
     def CreateNewChat(self):
       self.api_key = os.environ.get(self.api_key_system_variable)
       if self.configured_api_key != self.api_key:
@@ -173,7 +196,6 @@ def GetPromptTemplate(config):
                                     params_str(m['aggregating_function'].get('parameters', [])),
                                     MaybeDescription(m))
                       for m in config['measures'])
-  print(result_lines)
   result_lines.append('')
   result_lines.append('Available dimensions are:')
   result_lines.extend('* %s(%s)%s' % (d['function']['predicate_name'],
