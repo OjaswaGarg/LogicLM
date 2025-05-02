@@ -1,0 +1,16 @@
+#Example 1
+Question-> 
+      What are top popular names on westcoast?
+Logic Program -> 
+      BabyNames(fact) :-
+        `bigquery-public-data.usa_names.usa_1910_current`(..fact);
+      NumberOfBabies(fact) = Sum(fact.number);
+      Name(fact) = fact.name;
+      StateIn(fact, states:) :-
+        Constraint(fact.state in states);
+      ConsolidatingBabyNames(numberofbabies? Aggr= NumberOfBabies(fact), name: Name(fact)) distinct :- 
+        BabyNames(fact),
+        StateIn(fact, states: ["WA", "OR", "CA"]);
+      Report(`Name<>`: name, `NumberOfBabies<>`: numberofbabies) :- 
+        ConsolidatingBabyNames(numberofbabies, name:)
+# Example 1 ends

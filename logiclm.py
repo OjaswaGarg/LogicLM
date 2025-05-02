@@ -32,6 +32,7 @@ from logica.type_inference.research import infer
 from logica.parser_py import parse
 import run_sql_db
 import collections
+from logica.compiler import universe
 
 
 def create_and_write_file(filepath, content):
@@ -56,6 +57,7 @@ def Understand(config, user_request):
     json_obj = json.loads(json_str)
     # Skipping ordering
     json_obj["order"] = []
+    print("HI I AM HERE")
     print(json_obj)
   except Exception as e:
     print('Failed parsing:', json_str)
@@ -147,18 +149,10 @@ def runQueries(str_query="Select * from continents;",db_name="car_1",debug=False
   if debug:
     print(df)
   return df
-  
 
-
-def GetQuestions(db_name):
-  mind = ai.GoogleGenAI.Get()
-  db_question_name = "spider_data/dev.json"
-  sql_file_name = getSchema(db_name)
-  print(sql_file_name)
-  yodaql_file_name = "logica_description.txt"
-  def lowercase_quotes(match):
+def lowercase_quotes(match):
     return f'"{match.group(1).lower()}"'
-  def lowercase_inside_parentheses(match):
+def lowercase_inside_parentheses(match):
       content = match.group(1)
       tokens = content.split(',')
       transformed = []
@@ -170,6 +164,13 @@ def GetQuestions(db_name):
           else:
               transformed.append(stripped.lower())
       return f"({', '.join(transformed)})"
+
+def GetQuestions(db_name):
+  mind = ai.GoogleGenAI.Get()
+  db_question_name = "spider_data/dev.json"
+  sql_file_name = getSchema(db_name)
+  print(sql_file_name)
+  yodaql_file_name = "logica_description.txt"
 
   example_yodaql_config_file_name1 = "examples/car_1/car_1_new.l"
   example_yodaql_config_file_name2 = "examples/concert_singer/concert_singer_new.l"
@@ -226,6 +227,50 @@ def GetQuestions(db_name):
     print("Yodaql Config")
   except:
     print("Did not run config creation.")
+
+
+def GetLogicProgram(db_name,question):
+  mind = ai.GoogleGenAI.Get()
+  sql_file_name = getSchema(db_name)
+  logic_description_file = "logica_description.txt"
+  example_logic_program_file = "examples/logic_program/logic_program.txt"
+  with open(example_logic_program_file) as f:
+      example_logic_program = f.read()
+  with open(sql_file_name) as f:
+      sql_schema = f.read()
+      lines = sql_schema.strip().split('\n')
+      filtered_lines = [line for line in lines if not line.lower().startswith("insert into")]
+      sql_schema = "\n".join(filtered_lines)
+      sql_schema = re.sub(r'\(([^;]+?)\)', lowercase_inside_parentheses, sql_schema, flags=re.DOTALL)
+      converted_schema = re.sub(r'"([^"]+)"', lowercase_quotes, sql_schema)
+  with open(logic_description_file) as f:
+      logic_info = f.read()
+  try:
+    mind.CreateNewChat()
+    step1=mind.sendPrompt(f"Please Understand this Logic Info: {logic_info}")
+    print("Logic Info Step Done")
+    print(step1[:100])
+    step2=mind.sendPrompt(f"Please Understand this Input Schema: {converted_schema}")
+    print("Input Schema Step Done")
+    print(step2[:100])
+    step3=mind.sendPrompt(f"Please Understand this Question : {question}")
+    print("Question  Step Done")
+    print(step3[:100])
+    step4=mind.sendPrompt(f"Please Understand this Example Logic Program: {example_logic_program}")
+    print("Example Logic Program Step Done")
+    print(step4[:100])
+    new_config=mind.sendPrompt("Please provide a Logic Program for Input Schema which answers the question. Please do not include any hashtags or comments.",30000)
+    print("Logic Program Config")
+    print(new_config)
+  except:
+    print("Did not run config creation.")
+
+
+def GetSQL(logic_program):
+  rules = parse.ParseFile(logic_program)['rule']
+  logic_program = universe.LogicaProgram(rules)
+  sql = logic_program.FormattedPredicateSql('Report')
+  return sql
 
 def GetQuestion():
   folders=[]
@@ -337,13 +382,12 @@ def Testing():
   print("Delete Configs: ",delete_configs)
   answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
   errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
-  print(answers_df)
   answers_df.to_csv("running_queries2.txt", index=False)
   errors_df.to_csv("errors2.txt", index=False)
   print(f"Errors Number : {len(errors_df)}")
   print("We did testing for: ", testing_done)
   print("Number of rows correct:",len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]]))
-
+  
 
 
 
@@ -356,6 +400,9 @@ def main(argv):
 
   if config_filename=="testing":
     Testing()
+    return
+  if config_filename=="get_logic_program":
+    GetLogicProgram(argv[2],argv[3])
     return
 
   if config_filename == "run_query":
