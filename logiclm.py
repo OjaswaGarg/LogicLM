@@ -35,6 +35,12 @@ import collections
 from logica.compiler import universe
 
 
+def cleanup_content(content):
+    lines = content.strip().split('\n')
+    filtered_lines = [line for line in lines if not line.lower().startswith("```")]
+    content_filtered = "\n".join(filtered_lines)
+    return content_filtered
+
 def create_and_write_file(filepath, content):
     """Creates a file at the specified filepath (including parent directories) and writes the given content to it."""
     lines = content.strip().split('\n')
@@ -259,9 +265,16 @@ def GetLogicProgram(db_name,question):
     step4=mind.sendPrompt(f"Please Understand this Example Logic Program: {example_logic_program}")
     print("Example Logic Program Step Done")
     print(step4[:100])
-    new_config=mind.sendPrompt("Please provide a Logic Program for Input Schema which answers the question. Please do not include any hashtags or comments.",30000)
+    new_config=mind.sendPrompt("Please provide a Logic Program for Input Schema which answers the question. The final answer show have the name of the predicate as Report. Please do not include any hashtags or comments.",30000)
     print("Logic Program Config")
     print(new_config)
+    new_config=cleanup_content(new_config)
+    print("Cleanup Content", new_config)
+    print("Generating SQL")
+    sql=GetSQL(new_config)
+    print(sql)
+    print("Running SQL")
+    runQueries(sql,db_name,True)
   except:
     print("Did not run config creation.")
 
