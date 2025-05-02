@@ -251,6 +251,7 @@ def ExtendConnectionWithLogicaFunctions(con):
   con.create_function('SortList', 1, SortList)
   con.create_function('MagicalEntangle', 2, lambda x, y: x)
   con.create_function('IN_LIST', 2, InList)
+  con.create_function('list_contains', 2, InList)
   con.create_function('ERROR', 1, UserError)
   con.create_function('Fingerprint', 1, Fingerprint)
   con.create_function('Floor', 1, math.floor)

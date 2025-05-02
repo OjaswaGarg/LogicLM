@@ -400,6 +400,8 @@ class Olap:
 
   def GetSQL(self):
     program = self.GetFullLogicProgram()
+
+    print(program)
     rules = parse.ParseFile(program)['rule']
     logic_program = universe.LogicaProgram(rules)
     sql = logic_program.FormattedPredicateSql('Report')

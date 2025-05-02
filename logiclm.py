@@ -175,7 +175,6 @@ def GetQuestions(db_name):
   mind = ai.GoogleGenAI.Get()
   db_question_name = "spider_data/dev.json"
   sql_file_name = getSchema(db_name)
-  print(sql_file_name)
   yodaql_file_name = "logica_description.txt"
 
   example_yodaql_config_file_name1 = "examples/car_1/car_1_new.l"
@@ -304,6 +303,37 @@ def GetLogicPrograms(db_name,first_n=10):
   print(f"Coverage: {len(answers)/(len(answers)+len(errors))}")
   print(f"Number of Rows Matching on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
 
+
+def GetAllLogicProgram():
+  db_question_name = "spider_data/dev.json"
+  questions=collections.defaultdict(list)
+  golden_queries=collections.defaultdict(list)
+  errors=[]
+  answers=[]
+  with open(db_question_name) as f:
+      config = json.loads(f.read())
+  for test_case in config:
+    if getSchema(test_case["db_id"]):
+      questions[test_case["db_id"]].append(test_case["question"])
+      golden_queries[test_case["db_id"]].append(test_case["query"])
+  for db_name in questions:
+    golden_query=golden_queries[db_name]
+    question_list=questions[db_name]
+    for indx in range(len(question_list)):
+      print("QUESTION------------------------------->: ", db_name,question_list[indx],"\n")
+      status,output = GetLogicProgram(db_name,question_list[indx])
+      if status=="error":
+        errors.append([db_name,question_list[indx],output])
+        continue
+      print("ACTUAL SQL: ",golden_query[indx],"\n")
+      answer=runQueries(golden_query[indx],db_name)
+      answers.append([db_name,question_list[indx],answer.to_string().replace('\n', ''),output.to_string().replace('\n', ''),len(answer),len(output)])
+  answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
+  errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
+  answers_df.to_csv("logic_answers.txt", index=False)
+  errors_df.to_csv("logic_errors.txt", index=False)
+  print(f"Coverage: {len(answers)/(len(answers)+len(errors))}")
+  print(f"Number of Rows Matching on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
 
 
 
@@ -443,7 +473,9 @@ def main(argv):
     Testing()
     return
   if config_filename=="get_logic_program":
-    if len(argv)>3:
+    if len(argv)==2:
+      GetAllLogicProgram()
+    elif len(argv)>3:
       GetLogicProgram(argv[2],argv[3])
     else:
       GetLogicPrograms(argv[2])
@@ -524,3 +556,5 @@ def main(argv):
 
 if __name__ == '__main__':
   main(sys.argv)
+
+
