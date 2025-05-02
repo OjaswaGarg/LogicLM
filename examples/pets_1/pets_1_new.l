@@ -21,6 +21,8 @@ LogicLM(
     "AvgStudentAge", "MaxStudentAge", "MinStudentAge",
     "NumPetsPerStudent"
   ],
+  fact_tables_of_measures: ["NumStudents"->"Student","AvgStudentAge"->"Student","MaxStudentAge"->"Student",],"MinStudentAge"->"Student",
+
 
   filters: [
      "PetWeightGreaterThan", "PetWeightLessThan",
@@ -111,7 +113,7 @@ HasPetType(fact, pet_types:) :-
   Constraint(pt in pet_types);
 
 DoesNotHavePetType(fact, pet_types:) :-
-  ~Exists(
+  ~(
       Has_Pet(stuid: fact.stuid, petid:),
       Pets(petid:, pettype: pt),
       Constraint(pt in pet_types)

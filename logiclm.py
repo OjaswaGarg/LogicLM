@@ -75,6 +75,10 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   if isinstance(fact_tables,str):
     fact_tables = json.loads(fact_tables)
   config['fact_tables'] = [{'fact_table': f} for f in fact_tables]
+  fact_tables_of_measures={}
+  if 'fact_tables_of_measures' in config:
+    for f in config['fact_tables_of_measures']:
+      fact_tables_of_measures[f['arg']]=f['value']
   def Params(p):
     if p not in types.predicate_signature:
       assert False, 'Unknown predicate %s, known: %s' % (
@@ -82,16 +86,22 @@ def JsonConfigFromLogicLMPredicate(config_filename):
     return [{'field_name': f}
             for f in types.predicate_signature[p].keys()
             if not isinstance(f, int) and f != 'logica_value']
-  def BuildCalls(role, field):
+  def BuildCalls(role, field,fact_table={}):
     field_content=config[field]
     if isinstance(field_content,str):
       field_content=json.loads(field_content)
-    return [{role: {'predicate_name': p,
+    output=[{role: {'predicate_name': p,
                     'parameters': Params(p)}}
             for p in field_content]
+    if fact_table=={}:
+      return output
+    for o in output:
+      if o[role]['predicate_name'] in fact_table:
+        o['fact_table']=fact_table[o[role]['predicate_name']]
+    return output
 
   config['dimensions'] = BuildCalls('function', 'dimensions')
-  config['measures'] = BuildCalls('aggregating_function', 'measures')
+  config['measures'] = BuildCalls('aggregating_function', 'measures',fact_tables_of_measures)
   if 'filters' in config:
     config['filters'] = BuildCalls('predicate', 'filters')
   chart_types = [
@@ -327,8 +337,8 @@ def Testing():
   answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
   errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
   print(answers_df)
-  answers_df.to_csv("running_queries1.txt", index=False)
-  errors_df.to_csv("errors1.txt", index=False)
+  answers_df.to_csv("running_queries2.txt", index=False)
+  errors_df.to_csv("errors2.txt", index=False)
   print(f"Errors Number : {len(errors_df)}")
   print("We did testing for: ", testing_done)
   print("Number of rows correct:",len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]]))

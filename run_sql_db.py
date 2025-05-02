@@ -3,10 +3,14 @@ import duckdb
 import re
 import pandas as pd
 import os
+import sys
+import sqlite3_logica
 
 def run_query(sqlite_file_name, sql_file, sql_query):
     # Connect to the database
     conn = sqlite3.connect(sqlite_file_name)
+    sqlite3_logica.ExtendConnectionWithLogicaFunctions(conn)
+
     cursor = conn.cursor()
 
     # Check if schema already exists

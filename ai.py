@@ -173,6 +173,7 @@ def GetPromptTemplate(config):
                                     params_str(m['aggregating_function'].get('parameters', [])),
                                     MaybeDescription(m))
                       for m in config['measures'])
+  print(result_lines)
   result_lines.append('')
   result_lines.append('Available dimensions are:')
   result_lines.extend('* %s(%s)%s' % (d['function']['predicate_name'],
