@@ -1,4 +1,4 @@
-```logica
+
 @Engine("duckdb");
 
 LogicLM(
@@ -95,4 +95,3 @@ AdvisorIs(fact, advisor_ids:) :- Constraint(AdvisorId(fact) in advisor_ids);
 CityIs(fact, city_codes:) :- Constraint(CityCode(fact) in city_codes);
 AllergyIs(fact, allergy_names:) :- Constraint(AllergyName(fact) in allergy_names);
 AllergyTypeIs(fact, allergy_types:) :- Constraint(AllergyCategory(fact) in allergy_types);
-```

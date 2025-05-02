@@ -1,16 +1,59 @@
-#Example 1
-Question-> 
-      What are top popular names on westcoast?
-Logic Program -> 
-      BabyNames(fact) :-
-        `bigquery-public-data.usa_names.usa_1910_current`(..fact);
-      NumberOfBabies(fact) = Sum(fact.number);
-      Name(fact) = fact.name;
-      StateIn(fact, states:) :-
-        Constraint(fact.state in states);
-      ConsolidatingBabyNames(numberofbabies? Aggr= NumberOfBabies(fact), name: Name(fact)) distinct :- 
-        BabyNames(fact),
-        StateIn(fact, states: ["WA", "OR", "CA"]);
-      Report(`Name<>`: name, `NumberOfBabies<>`: numberofbabies) :- 
-        ConsolidatingBabyNames(numberofbabies, name:)
-# Example 1 ends
+This is the Logic Info: 
+  _LOGIC_INFO
+
+This is the input schema: 
+  _SCHEMA_
+
+
+These are examples of logic programs based on questions:
+  #Example 1
+    Question-> 
+          What are top popular names on westcoast?
+    Logic Program -> 
+          BabyNames(fact) :-
+            `bigquery-public-data.usa_names.usa_1910_current`(..fact);
+          NumberOfBabies(fact) = Sum(fact.number);
+          Name(fact) = fact.name;
+          StateIn(fact, states:) :-
+            Constraint(fact.state in states);
+          ConsolidatingBabyNames(numberofbabies? Aggr= NumberOfBabies(fact), name: Name(fact)) distinct :- 
+            BabyNames(fact),
+            StateIn(fact, states: ["WA", "OR", "CA"]);
+          Report(`Name<>`: name, `NumberOfBabies<>`: numberofbabies) :- 
+            ConsolidatingBabyNames(numberofbabies, name:)
+
+  #Example 2
+    Question-> 
+          How many continents are there? 
+    Logic Program -> 
+          Report(NumberOfContinents? += 1) distinct :- continents(); 
+
+
+  #Example 3
+    Question->
+          How many models does each car maker produce? List maker full name, id and the number. 
+    Logic Program -> 
+          Report(id:, fullname:, number_of_models? += 1) distinct :-
+          car_makers(id:, fullname:),
+          model_list(maker: id); 
+
+  #Example 4
+    Question->
+          How many countries does each continent have? List the continent id, continent name and the number of countries.
+    Logic Program -> 
+          Report(continent_id:, continent_name:, number_of_countries? += 1) distinct :-
+          continents(contid:continent_id, continent:continent_name),
+          countries(continent: continent_id); 
+
+  #Example 5
+    Question->
+          What is the model of the car with the smallest amount of horsepower? 
+    Logic Program -> 
+          GlobalMinHp() = Min{horsepower :- cars_data(horsepower:)};
+
+          Report(model:) distinct :-
+            cars_data(id: make_id, horsepower: hp_text),
+            car_names(makeid: make_id, model:),
+            hp_text == GlobalMinHp(); 
+
+Provide a Logic Program for Input Schema which answers the question- _QUESTION_. The final answer should have the name of the predicate as Report. Do not include any hashtags or comments.

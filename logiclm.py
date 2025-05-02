@@ -250,12 +250,10 @@ def getLogicTemplate(db_name,question):
       example_logic_program = f.read()
   with open(logic_description_file) as f:
       logic_info = f.read()
-  prompt =[]
-  prompt.append(f"This is the Logic Info : {logic_info}.")
-  prompt.append(f"This is the input schema: {converted_schema}.")
-  prompt.append(f"This is an exampled logic program: {example_logic_program}.")
-  prompt.append(f"Provide a Logic Program for Input Schema which answers the question- {question}. The final answer should have the name of the predicate as Report. Do not include any hashtags or comments.")
-  return "\n".join(prompt)
+  prompt=example_logic_program.replace("_LOGIC_INFO",logic_info)
+  prompt=prompt.replace("_SCHEMA_",converted_schema)
+  prompt=prompt.replace("_QUESTION_",question)
+  return prompt
 
   
 
@@ -266,16 +264,19 @@ def GetLogicProgram(db_name,question):
   try:
     logic_answer = mind.CreateLogicProgram(prompt)
     logic_answer = cleanup_content(logic_answer)
-    print("LOGIC PROGRAM: ",logic_answer)
+    print("LOGIC PROGRAM: ",logic_answer,"\n")
     sql=GetSQL(logic_answer)
-    print("GENERATED SQL: ",sql.replace('\n', ''))
+    print("GENERATED SQL: ",sql.replace('\n', ''),"\n")
     answer=runQueries(sql,db_name,False)
     return "success",answer
+  except parse.ParsingException as e:
+    print("Parsing Error is: ", e.ShowMessage())
+    return "error",e.ShowMessage()
   except BaseException as e:
     print("Error is: ", e)
     return "error",e
 
-def GetLogicPrograms(db_name,first_n=5):
+def GetLogicPrograms(db_name,first_n=10):
   db_question_name = "spider_data/dev.json"
   questions=[]
   golden_queries=[]
@@ -288,12 +289,12 @@ def GetLogicPrograms(db_name,first_n=5):
       questions.append(test_case["question"])
       golden_queries.append(test_case["query"])
   for indx in range(min(len(questions),first_n)):
-    print("QUESTION------------------------------->: ", questions[indx])
+    print("QUESTION------------------------------->: ", questions[indx],"\n")
     status,output = GetLogicProgram(db_name,questions[indx])
     if status=="error":
       errors.append([db_name,questions[indx],output])
       continue
-    print("ACTUAL SQL: ",golden_queries[indx])
+    print("ACTUAL SQL: ",golden_queries[indx],"\n")
     answer=runQueries(golden_queries[indx],db_name)
     answers.append([db_name,questions[indx],answer.to_string().replace('\n', ''),output.to_string().replace('\n', ''),len(answer),len(output)])
   answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
@@ -301,7 +302,7 @@ def GetLogicPrograms(db_name,first_n=5):
   answers_df.to_csv("logic_answers.txt", index=False)
   errors_df.to_csv("logic_errors.txt", index=False)
   print(f"Coverage: {len(answers)/(len(answers)+len(errors))}")
-  print(f"Rows Correct on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
+  print(f"Number of Rows Matching on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
 
 
 
