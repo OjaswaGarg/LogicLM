@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "Airline Flight Analysis",
@@ -44,7 +44,7 @@ AirlinesData(uid:, airline:, abbreviation:, country:) :-
   airlines(uid:, airline:, abbreviation:, country:);
 
 AirportsData(city:, airport_code:, airport_name:, country:, country_abbrev:) :-
-  airports(city:, airport_code:, airport_name:, country:, country_abbrev:);
+  airports(city:, airportcode:, airport_name:, country:, country_abbrev:);
 
 FlightsData(airline_id:, flight_no:, source_airport:, dest_airport:) :-
   flights(airline: airline_id, flightno: flight_no, sourceairport: source_airport, destairport: dest_airport);

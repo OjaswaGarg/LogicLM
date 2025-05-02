@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "Student Pet Analysis",
@@ -21,7 +21,7 @@ LogicLM(
     "AvgStudentAge", "MaxStudentAge", "MinStudentAge",
     "NumPetsPerStudent"
   ],
-  fact_tables_of_measures: ["NumStudents"->"Student","AvgStudentAge"->"Student","MaxStudentAge"->"Student",],"MinStudentAge"->"Student",
+  fact_tables_of_measures: ["NumStudents"->"Student","AvgStudentAge"->"Student","MaxStudentAge"->"Student","MinStudentAge"->"Student"],
 
 
   filters: [

@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "Document Template Analysis",

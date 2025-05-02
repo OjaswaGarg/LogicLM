@@ -77,6 +77,8 @@ def JsonConfigFromLogicLMPredicate(config_filename):
   config['fact_tables'] = [{'fact_table': f} for f in fact_tables]
   fact_tables_of_measures={}
   if 'fact_tables_of_measures' in config:
+    if isinstance(config['fact_tables_of_measures'],str):
+      config['fact_tables_of_measures'] = json.loads(config['fact_tables_of_measures'])
     for f in config['fact_tables_of_measures']:
       fact_tables_of_measures[f['arg']]=f['value']
   def Params(p):
@@ -333,7 +335,6 @@ def Testing():
       delete_configs.append(db_name)
       print(f"An error occurred: {e}")
   print("Delete Configs: ",delete_configs)
-  print(answers)
   answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
   errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
   print(answers_df)

@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "Cars Analysis",
@@ -47,7 +47,7 @@ SafeHorsepower(hp_text) = null :- ~StringIsNumeric(hp_text);
 SafeMpg(mpg_text) = ToFloat(mpg_text) :- StringIsNumeric(mpg_text);
 SafeMpg(mpg_text) = null :- ~StringIsNumeric(mpg_text);
 
-@With(FactTableT);
+
 FactTableT(
     car_id:,
     mpg_str:, cylinders:, edispl:, horsepower_str:, weight:, accelerate:, year:,

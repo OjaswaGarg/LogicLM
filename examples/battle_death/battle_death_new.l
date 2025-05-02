@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "Naval Battle Analysis",
@@ -43,15 +43,15 @@ LogicLM(
   ]
 );
 
-Battle(id:, name:, date:, bulgarian_commander:, latin_commander:, result:) :-
+BattleT(id:, name:, date:, bulgarian_commander:, latin_commander:, result:) :-
   battle(id:, name:, date:, bulgarian_commander:, latin_commander:, result:);
-
-Ship(lost_in_battle:, id:, name:, tonnage:, ship_type:, location:, disposition_of_ship:) :-
+Battle(r):- BattleT(..r);
+ShipT(lost_in_battle:, id:, name:, tonnage:, ship_type:, location:, disposition_of_ship:) :-
   ship(lost_in_battle:, id:, name:, tonnage:, ship_type:, location:, disposition_of_ship:);
-
-Death(caused_by_ship_id:, id:, note:, killed:, injured:) :-
+Ship(r):- ShipT(..r);
+DeathT(caused_by_ship_id:, id:, note:, killed:, injured:) :-
   death(caused_by_ship_id:, id:, note:, killed:, injured:);
-
+Death(r):- DeathT(..r);
 
 BattleId(fact) = fact.id;
 BattleName(fact) = fact.name;

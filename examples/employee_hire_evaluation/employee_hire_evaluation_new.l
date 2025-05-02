@@ -1,4 +1,4 @@
-@Engine("duckdb");
+@Engine("sqlite");
 
 LogicLM(
   name: "HR Shops Analysis",
@@ -70,29 +70,29 @@ Evaluation(employee_id:, year_awarded:, bonus:) :-
     employee_id == ToInt64(eid_text);
 
 EmployeeShopInfoT(
-    employee_id: e.employee_id, emp_name: e.name, emp_age: e.age, emp_city: e.city,
-    shop_id: s.shop_id, shop_name: s.name, shop_location: s.location, shop_district: s.district,
-    shop_num_products: s.number_products, shop_manager: s.manager_name,
-    hiring_start_from: h.start_from, hiring_is_full_time: h.is_full_time
+    employee_id: employee_id, emp_name: name, emp_age: age, emp_city: city,
+    shop_id: shop_id, shop_name: name, shop_location: location, shop_district: district,
+    shop_num_products: number_products, shop_manager: manager_name,
+    hiring_start_from: start_from, hiring_is_full_time: is_full_time
   ) :-
-    Employee() As e,
-    Hiring(employee_id: e.employee_id) As h,
-    Shop(shop_id: h.shop_id) As s;
+    Employee(employee_id:, name:, age:, city:),
+    Hiring(shop_id:, employee_id:employee_id, start_from:, is_full_time:),
+    Shop(shop_id:shop_id, name:, location:, district:, number_products:, manager_name:);
 
 EmployeeShopInfo(r) :- EmployeeShopInfoT(..r);
 
 EmployeeId(fact) = fact.employee_id;
-EmployeeName(fact) = fact.emp_name ?? fact.name;
-EmployeeAge(fact) = fact.emp_age ?? fact.age;
-EmployeeCity(fact) = fact.emp_city ?? fact.city;
+EmployeeName(fact) = fact.emp_name ;
+EmployeeAge(fact) = fact.emp_age;
+EmployeeCity(fact) = fact.emp_city;
 ShopId(fact) = fact.shop_id;
-ShopName(fact) = fact.shop_name ?? fact.name;
-ShopLocation(fact) = fact.shop_location ?? fact.location;
-ShopDistrict(fact) = fact.shop_district ?? fact.district;
-ShopNumProducts(fact) = fact.shop_num_products ?? fact.number_products;
-ShopManagerName(fact) = fact.shop_manager ?? fact.manager_name;
-HiringStartFrom(fact) = fact.hiring_start_from ?? fact.start_from;
-HiringIsFullTime(fact) = fact.hiring_is_full_time ?? fact.is_full_time;
+ShopName(fact) = fact.shop_name;
+ShopLocation(fact) = fact.shop_location;
+ShopDistrict(fact) = fact.shop_district;
+ShopNumProducts(fact) = fact.shop_num_products;
+ShopManagerName(fact) = fact.shop_manager;
+HiringStartFrom(fact) = fact.hiring_start_from;
+HiringIsFullTime(fact) = fact.hiring_is_full_time;
 EvaluationYear(fact) = fact.year_awarded;
 EvaluationBonus(fact) = fact.bonus;
 
