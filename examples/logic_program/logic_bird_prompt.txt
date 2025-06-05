@@ -11,46 +11,12 @@ This is the snippet of the data in the tables mentioned in the schema:
 These are examples of logic programs based on questions:
   #Example 1
     Question-> 
-          What are top popular names on westcoast?
-    Logic Program -> 
-          BabyNames(fact) :-
-            `bigquery-public-data.usa_names.usa_1910_current`(..fact);
-          NumberOfBabies(fact) = Sum(fact.number);
-          Name(fact) = fact.name;
-          StateIn(fact, states:) :-
-            Constraint(fact.state in states);
-          ConsolidatingBabyNames(numberofbabies? Aggr= NumberOfBabies(fact), name: Name(fact)) distinct :- 
-            BabyNames(fact),
-            StateIn(fact, states: ["WA", "OR", "CA"]);
-          @OrderBy("Report", "`NumberOfBabies<>` desc");
-          Report(`Name<>`: name, `NumberOfBabies<>`: numberofbabies) :- 
-            ConsolidatingBabyNames(numberofbabies, name:)
-  #Example 2
-    Question-> 
-          What are top two popular names on westcoast?
-    Logic Program -> 
-          BabyNames(fact) :-
-            `bigquery-public-data.usa_names.usa_1910_current`(..fact);
-          NumberOfBabies(fact) = Sum(fact.number);
-          Name(fact) = fact.name;
-          StateIn(fact, states:) :-
-            Constraint(fact.state in states);
-          ConsolidatingBabyNames(numberofbabies? Aggr= NumberOfBabies(fact), name: Name(fact)) distinct :- 
-            BabyNames(fact),
-            StateIn(fact, states: ["WA", "OR", "CA"]);
-          @Limit("Report", 2);
-          @OrderBy("Report", "`NumberOfBabies<>` desc");
-          Report(`Name<>`: name, `NumberOfBabies<>`: numberofbabies) :- 
-            ConsolidatingBabyNames(numberofbabies, name:)
-
-  #Example 3
-    Question-> 
           How many continents are there? 
     Logic Program -> 
           Report(NumberOfContinents? += 1) distinct :- continents(); 
 
 
-  #Example 4
+  #Example 2
     Question->
           How many models does each car maker produce? List maker full name, id and the number. 
     Logic Program -> 
@@ -58,7 +24,7 @@ These are examples of logic programs based on questions:
           car_makers(id:, fullname:),
           model_list(maker: id); 
 
-  #Example 5
+  #Example 3
     Question->
           How many countries does each continent have? List the continent id, continent name and the number of countries.
     Logic Program -> 
@@ -66,7 +32,7 @@ These are examples of logic programs based on questions:
           continents(contid:continent_id, continent:continent_name),
           countries(continent: continent_id); 
 
-  #Example 6
+  #Example 4
     Question->
           What is the model of the car with the smallest amount of horsepower? 
     Logic Program -> 
@@ -77,7 +43,7 @@ These are examples of logic programs based on questions:
             car_names(makeid: make_id, model:),
             hp_text == GlobalMinHp(); 
 
-  #Example 7
+  #Example 5
     Question->
           What is the name and nation of the singer who have a song having 'Hey' in its name?
     Logic Program -> 
@@ -85,16 +51,19 @@ These are examples of logic programs based on questions:
           singer(name:, country:, song_name: s_name),
           Like(s_name, "%Hey%"); 
 
-  #Example 8
+  #Example 6
     Question->
           How many different first names are there among player first_names?
     Logic Program ->
           Report(player_name_count? Count= first_name) distinct :-
           player(first_name:);
+          
 
 Kindly use @Engine("sqlite")
 Please don't forget that quotes in logica are double! "This is your sting!"
 Also names of fields (aka predicate arguments) must be lowercase.
 Predicate(your_argument:, another_argument:).
+Please use the column names as provided in the schema under original_column_name.
 Do not include ATTACH DATABASE in the logica program.
+This is some information about the question - _EVIDENCE_
 Provide a Logic Program for Input Schema which answers the question- _QUESTION_. The final answer should have the name of the predicate as Report. Do not include any hashtags or comments.

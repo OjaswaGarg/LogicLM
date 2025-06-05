@@ -26,6 +26,32 @@ def run_query(sqlite_file_name, sql_file, sql_query):
             print(f"Applying schema from {sql_file}")
             cursor.executescript(sql_script)
 
+    def decode_text(data):
+        return data.decode('utf-8', errors='replace')
+    
+    conn.text_factory=decode_text
+
+    df = pd.read_sql_query(sql_query, conn)
+    
+
+    conn.commit()
+    conn.close()
+    return df
+
+
+
+def run_query_sqlite(sqlite_file_name, sql_query):
+    # Connect to the database
+    conn = sqlite3.connect(sqlite_file_name)
+    sqlite3_logica.ExtendConnectionWithLogicaFunctions(conn)
+
+    cursor = conn.cursor()
+
+    def decode_text(data):
+        return data.decode('utf-8', errors='replace')
+    
+    conn.text_factory=decode_text
+
     df = pd.read_sql_query(sql_query, conn)
     
 

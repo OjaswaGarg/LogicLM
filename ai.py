@@ -120,10 +120,14 @@ class GoogleGenAI(AI):
         content = model.generate_content(
           prompt,
           generation_config=dict(
-            max_output_tokens=3000,
+            max_output_tokens=50000,
             temperature=0.2
           ))
-        return content.text
+        if content and content.text:
+            return content.text
+        else:
+            print("Model generated content but no text was available.")
+            print(f"Response object: {content}")
       except Exception as e:
         print(f"An error occurred: {e}")
 
