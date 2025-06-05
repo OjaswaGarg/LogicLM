@@ -257,74 +257,6 @@ def lowercase_inside_parentheses(match):
               transformed.append(stripped.lower())
       return f"({', '.join(transformed)})"
 
-def GetQuestions(db_name):
-  mind = ai.GoogleGenAI.Get()
-  db_question_name = _QUESTION_FILE_NAME
-  sql_file_name = getSchema(db_name)
-  yodaql_file_name = "logica_description.txt"
-
-  example_yodaql_config_file_name1 = "examples/car_1/car_1_new.l"
-  example_yodaql_config_file_name2 = "examples/concert_singer/concert_singer_new.l"
-  example_yodaql_config_file_name3 = "examples/poker_player/poker_player_new.l"
-  with open(example_yodaql_config_file_name1) as f:
-      example_yodaql_config1 = f.read()
-  with open(example_yodaql_config_file_name2) as f:
-      example_yodaql_config2 = f.read()
-  with open(example_yodaql_config_file_name3) as f:
-      example_yodaql_config3 = f.read()
-  with open(sql_file_name) as f:
-      sql_schema = f.read()
-      converted_schema = cleanup_schema(sql_schema)
-  with open(yodaql_file_name) as f:
-      yodaql_info = f.read()
-  questions=[]
-  with open(db_question_name) as f:
-      config = json.loads(f.read())
-  for test_case in config:
-    if test_case["db_id"]==db_name:
-      questions.append(test_case["question"])
-  try:
-    mind.CreateNewChat()
-    step1=mind.sendPrompt(f"Please Understand this Yodaql Info: {yodaql_info}")
-    print("Yodaql Info Step Done")
-    time.sleep(20)
-    print(step1[:100])
-    step2=mind.sendPrompt(f"Please Understand this Input Schema: {converted_schema}")
-    print("Input Schema Step Done")
-    time.sleep(20)
-    print(step2[:100])
-    step3=mind.sendPrompt(f"Please Understand this Questions : {','.join(questions)}")
-    print("Questions  Step Done")
-    time.sleep(20)
-    print(step3[:100])
-    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 1 : {example_yodaql_config1}")
-    print("Example Yodaql Config 1 Step Done")
-    time.sleep(20)
-    print(step4[:100])
-    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 2 : {example_yodaql_config2}")
-    print("Example Yodaql Config 2 Step Done")
-    time.sleep(20)
-    print(step4[:100])
-    step4=mind.sendPrompt(f"Please Understand this Example Yodaql Config 3 : {example_yodaql_config3}")
-    print("Example Yodaql Config 3 Step Done")
-    time.sleep(20)
-    print(step4[:100])
-    new_config=mind.sendPrompt("Please provide a yodaql config for Input Schema which answers the questions. Please do not include any hashtags or comments.",30000)
-    create_and_write_file(f"examples/{db_name}/{db_name}_new.l",new_config)
-    print("Yodaql Config")
-  except:
-    print("Did not run config creation.")
-
-
-def GetLogicLMConfig(db_name):
-  mind = ai.GoogleGenAI.Get()
-  prompt=getLogicLMTemplate(db_name)
-  try:
-    logiclm_answer = mind.CreateLogicProgram(prompt)
-    create_and_write_file(f"examples/{db_name}/{db_name}_recent.l",logiclm_answer)
-  except BaseException as e:
-    print("Did not run config creation.",e)
-
 
 def getLogicTemplate(db_name,question_evidence,extra_snip):
   converted_schema = getSchema(db_name)
@@ -344,41 +276,6 @@ def getLogicTemplate(db_name,question_evidence,extra_snip):
   prompt.replace("_DATA_",extra_snip)
   prompt=prompt.replace("_QUESTION_",question)
   prompt=prompt.replace("_LOGIC_INFO",logic_info)
-  return prompt
-
-def getLogicLMTemplate(db_name):
-  sql_file_name = getSchema(db_name)
-  db_question_name = _QUESTION_FILE_NAME
-  example_yodaql_config_file_name1 = "examples/car_1/car_1_new.l"
-  example_yodaql_config_file_name2 = "examples/concert_singer/concert_singer_new.l"
-  example_yodaql_config_file_name3 = "examples/poker_player/poker_player_new.l"
-  with open(example_yodaql_config_file_name1) as f:
-      example_yodaql_config1 = f.read()
-  with open(example_yodaql_config_file_name2) as f:
-      example_yodaql_config2 = f.read()
-  with open(example_yodaql_config_file_name3) as f:
-      example_yodaql_config3 = f.read()
-  with open(sql_file_name) as f:
-      sql_schema = f.read()
-      converted_schema = cleanup_schema(sql_schema)
-  questions=[]
-  with open(db_question_name) as f:
-      config = json.loads(f.read())
-  for test_case in config:
-    if test_case["db_id"]==db_name:
-      questions.append(test_case["question"])
-  logic_description_file = "logica_description.txt"
-  example_logic_program_file = "examples/logic_program/logiclm_config_prompt.txt"
-  with open(example_logic_program_file) as f:
-      example_logic_program = f.read()
-  with open(logic_description_file) as f:
-      logic_info = f.read()
-  prompt=example_logic_program.replace("_LOGIC_INFO",logic_info)
-  prompt=prompt.replace("_SCHEMA_",converted_schema)
-  prompt=prompt.replace("_QUESTIONS_",'\n'.join(questions))
-  prompt=prompt.replace("_EXAMPLE_1",example_yodaql_config_file_name1)
-  prompt=prompt.replace("_EXAMPLE_2",example_yodaql_config_file_name2)
-  prompt=prompt.replace("_EXAMPLE_3",example_yodaql_config_file_name3)
   return prompt
 
   
@@ -409,38 +306,6 @@ def GetLogicProgram(db_name,question_evidence,extra_snip=""):
     print("----------------------")
     return "error",e,None,None
 
-def GetLogicPrograms(db_name,first_n=10):
-  db_question_name = _QUESTION_FILE_NAME
-  questions=[]
-  golden_queries=[]
-  errors=[]
-  answers=[]
-  actual_query=[]
-  generated_query=[]
-  with open(db_question_name) as f:
-      config = json.loads(f.read())
-  for test_case in config:
-    if test_case["db_id"]==db_name:
-      questions.append(test_case["question"])
-      golden_queries.append(test_case["query"])
-  for indx in range(min(len(questions),first_n)):
-    print("QUESTION------------------------------->: ", questions[indx],"\n")
-    status,output,generated_query = GetLogicProgram(db_name,questions[indx])
-    if status=="error":
-      errors.append([db_name,questions[indx],output])
-      continue
-    print("ACTUAL SQL: ",golden_queries[indx],"\n")
-    answer=runQueries(golden_queries[indx],db_name)
-    answers.append([db_name,questions[indx],answer.to_string().replace('\n', ''),output.to_string().replace('\n', ''),len(answer),len(output)])
-    actual_query.append(golden_queries[indx].replace("\n"," "))
-    generated_query.append(generated_query.replace("\n"," "))
-    
-  answers_df=pd.DataFrame(answers,columns=["db_name","Question","Actual Output","Logical Output","Actual Len","Logical Len"])
-  errors_df=pd.DataFrame(errors,columns=["db_name","Question","Error"])
-  answers_df.to_csv("logic_answers.txt", index=False)
-  errors_df.to_csv("logic_errors.txt", index=False)
-  print(f"Coverage: {len(answers)/(len(answers)+len(errors))}")
-  print(f"Number of Rows Matching on Running Queries: {len(answers_df[answers_df["Actual Len"]==answers_df["Logical Len"]])/len(answers)}")
 
 def CachingLogicas():
   answer_path = _LOGICA_ANSWERS_OUTPUT 
@@ -561,39 +426,11 @@ def GetResults():
 
   
   
-
-
-
-
 def GetSQL(logic_program):
   rules = parse.ParseFile(logic_program)['rule']
   logic_program = universe.LogicaProgram(rules)
   sql = logic_program.FormattedPredicateSql('Report')
   return sql
-
-def GetQuestion():
-  folders=[]
-  questions=collections.defaultdict(list)
-  db_question_name = _QUESTION_FILE_NAME
-  with open(db_question_name) as f:
-      config = json.loads(f.read())
-  for test_case in config:
-    if test_case["db_id"]:
-      questions[test_case["db_id"]].append(test_case["question"])
-  for db_name in list(questions.keys()):
-    try:
-        if getSchema(db_name) and getSQLite(db_name):
-          folders.append(db_name)
-    except:
-        continue
-  for db_name in folders:
-    print(folders)
-    file_path = f"examples/{db_name}/{db_name}_recent.l"
-    print(file_path)
-    if os.path.exists(file_path):
-      print("skipped for:", db_name)
-    else:
-      GetLogicLMConfig(db_name)
 
 def write_list_of_lists_to_file(data, filename):
     """Writes a list of lists to a text file.
@@ -615,8 +452,6 @@ def write_list_of_lists_to_file(data, filename):
         print(f"List of lists successfully written to '{filename}'")
     except Exception as e:
         print(f"An error occurred while writing to the file: {e}")
-
-
 
 
 
@@ -646,70 +481,7 @@ def main(argv):
     else:
       runQueries()
     return
-  
-  if config_filename =="get_questions":
-    if len(argv)>=3:
-      GetQuestions(argv[2])
-    else:
-      GetQuestion()
-    return
-  command = argv[2]
-
-  
-
-
-  if config_filename[-4:] == 'json':
-    with open(config_filename) as f:
-      config = json.loads(f.read())
-  else:
-    config = JsonConfigFromLogicLMPredicate(config_filename)
-
-  if command == 'understand':
-    user_request = argv[3]
-    print(Understand(config, user_request))
-  elif command == 'logic_program':
-    request = json.loads(argv[3])
-    analyzer = olap.Olap(config, request)
-    print(analyzer.GetLogicProgram())
-  elif command == 'sql':
-    request = json.loads(argv[3])
-    analyzer = olap.Olap(config, request)
-    print(analyzer.GetSQL())
-  elif command == 'show_prompt':
-    print(ai.GetPromptTemplate(config))
-  elif command == 'understand_and_program':
-    user_request = argv[3]
-    request = Understand(config, user_request)
-    analyzer = olap.Olap(config, request)
-    print(analyzer.GetLogicProgram())
-  elif command == 'understand_and_sql':
-    user_request = argv[3]
-    request = Understand(config, user_request)
-    analyzer = olap.Olap(config, request)
-    try:
-      print(analyzer.GetSQL())
-    except parse.ParsingException as parsing_exception:
-      parsing_exception.ShowMessage()
-      sys.exit(1)
-  elif command == 'understand_sql_run':
-    user_request = argv[3]
-    request = Understand(config, user_request)
-    analyzer = olap.Olap(config, request)
-    try:
-      if len(argv)>=5:
-        runQueries(analyzer.GetSQL(),argv[4],True)
-      else:
-        runQueries(analyzer.GetSQL())
-    except parse.ParsingException as parsing_exception:
-      parsing_exception.ShowMessage()
-      sys.exit(1)
-  elif command == 'start_server':
-    server.StartServer(config)
-  elif command == 'remove_dashboard_from_config':
-    config['dashboard'] = {}
-    print(json.dumps(config, indent='  '))
-  else:
-    assert False
+  assert False
 
 
 if __name__ == '__main__':
